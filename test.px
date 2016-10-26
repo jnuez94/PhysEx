@@ -1,0 +1,10 @@
+blob[] bacteriaSamples = [1,1,1,1,1,1,1];
+
+function Multiply(int microOrg){
+	microOrg *= 2;
+}
+
+stimulus asexualRepo (1, bacteriaSamples) {
+	Multiply() ON bacteriaSamples;
+	}
+}
