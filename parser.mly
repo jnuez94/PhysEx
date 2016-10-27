@@ -1,5 +1,6 @@
 %{ open Ast %}
 
+%token LBR LPR RBR RPR SEMICOLON
 %token PLUS MINUS TIMES DIVIDE EOF ASN SEQ 
 %token MULTASN DIVASN PLUSASN SUBASN NE EQ LT LTE GT GTE
 %token OR AND NOT IF ELSE ELIF WHILE FOR FUNC STIM INT CHAR
@@ -10,7 +11,7 @@
 
 %left SEQ 
 %right ASN
-%left PLUS MINUS
+%left PLUS MINUS 
 %left TIMES DIVIDE
 
 %start expr
@@ -19,14 +20,35 @@
 %%
 
 expr:
-expr	PLUS 		expr	{ Binop($1, Add, $3) }
-| expr	MINUS 		expr	{ Binop($1, Sub, $3) }
-| expr	TIMES		expr	{ Binop($1, Mul, $3) }
-| expr	DIVIDE		expr	{ Binop($1, Div, $3) }
-| LITERAL					{ Lit($1) }
-| VARIABLE					{ Var($1) }
-| expr	SEQ			expr	{ Seq($1, $3) }
-| VARIABLE ASN		expr	{ Asn($1, $3) }
-| expr
-| logic_expr AND	logic_expr 	{ logic_binop($1, And, $3) }
-| logic_expr OR	logic_expr 	{ logic_binop($1, Or, $3) }
+	expr	PLUS 	expr	{ 0 }
+| 	expr	MINUS 	expr	{ 0 }
+| 	expr	TIMES	expr	{ 0 }
+| 	expr	DIVIDE	expr	{ 0 }
+| 	expr	SEQ		expr	{ 0 }
+|	asn
+|	loop
+| 	LITERAL					{ 0 }
+| 	VARIABLE				{ 0 }
+
+
+asn:
+	VARIABLE 	ASN			expr	{0}
+| 	VARIABLE 	MULTASN 	expr 	{0}
+|	VARIABLE 	DIVASN 		expr 	{0}
+|	VARIABLE 	PLUSASN 	expr 	{0}
+|	VARIABLE 	SUBASN 		expr 	{0}
+|   VARIABLE	ASN         l_expr 	{0}
+
+
+l_expr:
+ 	NOT 		l_expr			{ 0 }
+| 	l_expr 		AND		l_expr 	{ 0 }
+| 	l_expr 		OR		l_expr 	{ 0 }
+| 	BOOL
+
+loop:
+	IF 	LPR l_expr 	RPR LBR expr RBR { 0 }
+| 	FOR LPR asn SEMICOLON l_expr ASN RPR LBR expr RBR { 0 }
+|	WHILE LPR l_expr RPR LBR expr RBR { 0 }
+|	IF 	LPR l_expr 	RPR LBR expr RBR ELSE LBR expr RBR { 0 }
+| 	IF 	LPR l_expr 	RPR LBR expr RBR ELIF LPR l_expr RPRLBR expr RBR { 0 }
