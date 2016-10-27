@@ -1,7 +1,7 @@
 { open Parser }
 
 rule token = parse
-	[' ' '\t' '\r' '\n'] { token lexbuf }
+[' ' '\t' '\r' '\n'] { token lexbuf }
 | '+' { PLUS }
 | '-' { MINUS }
 | '*' { TIMES }
@@ -11,7 +11,7 @@ rule token = parse
 | ['0'-'9']+ as lit { LITERAL(int_of_string lit) }
 | eof { EOF }
 | '$'['0'-'9'] as lit { VARIABLE(int_of_char lit.[1] - 48) }
-| ',' { SEQ }
+| ',' { COMMA }
 
 | '=' { ASN }
 | "*=" { MULTASN }
@@ -46,3 +46,11 @@ rule token = parse
 | "float" { FLT }
 | "bool" { BOOL }
 | "blob" { BLOB }
+| "null" { NULL }
+
+| '(' { LPR }
+| ')' { RPR }
+| '{' { LBR }
+| '}' { RBR }
+
+| ';' { SEMICOLON }
