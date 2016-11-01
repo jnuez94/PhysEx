@@ -1,56 +1,25 @@
 { open Parser }
 
-rule token = parse
-[' ' '\t' '\r' '\n'] { token lexbuf }
-| '+' { PLUS }
-| '-' { MINUS }
-| '*' { TIMES }
-| '/' { DIVIDE }
-| '%' { MOD }
+rule token =
+	parse [' ' '\t' '\r' '\n']	{ token lexbuf }
+	|	eof												{ EOF }
+	| ';'												{ SEMICOLON }
 
-| ['0'-'9']+ as lit { LITERAL(int_of_string lit) }
-| eof { EOF }
-| '$'['0'-'9'] as lit { VARIABLE(int_of_char lit.[1] - 48) }
-| ',' { COMMA }
+	| ['0'-'9']+ as lit																												{ NUM_LITERAL(int_of_string lit) }
+	| ['0'-'9']+ '.' ['0'-'9'] as lit																					{ FLOAT_LITERAL(float_of_string lit) }
+	| ['$' '_' 'a'-'z' 'A'-'Z'] ['$' '_' '-' 'a'-'z' 'A'-'Z' '0'-'9']* as lit	{ VARIABLE(int_of_char lit.[1] - 48) }
 
-| '=' { ASN }
-| "*=" { MULTASN }
-| "/=" { DIVASN }
-| "+=" { PLUSASN }
-| "-=" { SUBASN }
+	| "null"	{ NULL }
+	| "true"	{ TRUE }
+	| "false"	{ FALSE }
 
-| "!=" { NE }
-| "==" { EQ }
-| "<" { LT }
-| "<=" { LTE }
-| ">" { GT }
-| ">=" { GTE }
+	|	'=' { ASN }
+	| '+'	{ PLUS }
+	| '-' { MINUS }
+	| '*' { TIMES }
+	| '/' { DIVIDE }
 
-| "||" { OR }
-| "&&" { AND }
-| '!' { NOT }
-
-| "if" { IF }
-| "else" { ELSE }
-| "else if" { ELIF }
-
-| "while" { WHILE }
-| "for" { FOR }
-
-| "function" { FUNC }
-| "stimulus" { STIM }
-
-| "int" { INT }
-| "char" { CHAR }
-| "string" { STR }
-| "float" { FLT }
-| "bool" { BOOL }
-| "blob" { BLOB }
-| "null" { NULL }
-
-| '(' { LPR }
-| ')' { RPR }
-| '{' { LBR }
-| '}' { RBR }
-
-| ';' { SEMICOLON }
+	| "int"			{ INT }
+	| "string"	{ STR }
+	| "float"		{ FLT }
+	| "bool"		{ BOOL }
