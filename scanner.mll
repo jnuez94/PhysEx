@@ -10,7 +10,7 @@ rule token = parse
 
 | ['0'-'9']+ as lit { LITERAL(int_of_string lit) }
 | eof { EOF }
-| '$'['0'-'9'] as lit { VARIABLE(int_of_char lit.[1] - 48) }
+| ['a'-'z''A'-'Z']['_''0'-'9''a'-'z''$''A'-Z']* as lit { VARIABLE() }
 | ',' { SEQ }
 
 | '=' { ASN }
