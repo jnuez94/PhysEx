@@ -19,7 +19,20 @@ rule token =
 	| '*' { TIMES }
 	| '/' { DIVIDE }
 
+	| '(' { LPR }
+	| ')' { RPR }
+	| '{' { LBR }
+	| '}' { RBR }
+
+	| "||"	{ OR }
+	| '!'		{ NOT }
+	| "&&"	{ AND }
+
 	| "int"			{ INT }
 	| "string"	{ STR }
 	| "float"		{ FLT }
 	| "bool"		{ BOOL }
+
+	| "if"			{ IF }
+	| "else"		{ ELSE }
+	| "else if"	{ ELIF }

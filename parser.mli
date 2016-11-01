@@ -4,10 +4,20 @@ type token =
   | MINUS
   | TIMES
   | DIVIDE
+  | LPR
+  | RPR
+  | LBR
+  | RBR
   | ASN
   | NULL
   | TRUE
   | FALSE
+  | OR
+  | AND
+  | NOT
+  | IF
+  | ELSE
+  | ELIF
   | INT
   | STR
   | FLT

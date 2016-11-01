@@ -14,13 +14,19 @@
   10       | STR
   11       | BOOL
   12       | NULL
-  13       | expr ASN expr
-  14       | expr PLUS expr
-  15       | expr MINUS expr
-  16       | expr TIMES expr
-  17       | expr DIVIDE expr
+  13       | NOT expr
+  14       | expr AND expr
+  15       | expr OR expr
+  16       | expr ASN expr
+  17       | expr PLUS expr
+  18       | expr MINUS expr
+  19       | expr TIMES expr
+  20       | expr DIVIDE expr
+  21       | IF LPR expr RPR LBR expr RBR
+  22       | IF LPR expr RPR LBR expr RBR ELSE LBR expr RBR
+  23       | IF LPR expr RPR LBR expr RBR ELIF LPR expr RPR LBR expr RBR
 
-  18  %entry% : '\001' prgm
+  24  %entry% : '\001' prgm
 
 state 0
 	$accept : . %entry% $end  (0)
@@ -32,23 +38,25 @@ state 0
 
 
 state 1
-	%entry% : '\001' . prgm  (18)
+	%entry% : '\001' . prgm  (24)
 
 	NULL  shift 3
 	TRUE  shift 4
 	FALSE  shift 5
-	INT  shift 6
-	STR  shift 7
-	FLT  shift 8
-	BOOL  shift 9
-	NUM_LITERAL  shift 10
-	FLOAT_LITERAL  shift 11
-	VARIABLE  shift 12
+	NOT  shift 6
+	IF  shift 7
+	INT  shift 8
+	STR  shift 9
+	FLT  shift 10
+	BOOL  shift 11
+	NUM_LITERAL  shift 12
+	FLOAT_LITERAL  shift 13
+	VARIABLE  shift 14
 	.  error
 
-	prgm  goto 13
-	exprs  goto 14
-	expr  goto 15
+	prgm  goto 15
+	exprs  goto 16
+	expr  goto 17
 
 
 state 2
@@ -76,248 +84,693 @@ state 5
 
 
 state 6
+	expr : NOT . expr  (13)
+
+	NULL  shift 3
+	TRUE  shift 4
+	FALSE  shift 5
+	NOT  shift 6
+	IF  shift 7
+	INT  shift 8
+	STR  shift 9
+	FLT  shift 10
+	BOOL  shift 11
+	NUM_LITERAL  shift 12
+	FLOAT_LITERAL  shift 13
+	VARIABLE  shift 14
+	.  error
+
+	expr  goto 18
+
+
+state 7
+	expr : IF . LPR expr RPR LBR expr RBR  (21)
+	expr : IF . LPR expr RPR LBR expr RBR ELSE LBR expr RBR  (22)
+	expr : IF . LPR expr RPR LBR expr RBR ELIF LPR expr RPR LBR expr RBR  (23)
+
+	LPR  shift 19
+	.  error
+
+
+state 8
 	expr : INT .  (9)
 
 	.  reduce 9
 
 
-state 7
+state 9
 	expr : STR .  (10)
 
 	.  reduce 10
 
 
-state 8
+state 10
 	expr : FLT .  (8)
 
 	.  reduce 8
 
 
-state 9
+state 11
 	expr : BOOL .  (11)
 
 	.  reduce 11
 
 
-state 10
+state 12
 	expr : NUM_LITERAL .  (6)
 
 	.  reduce 6
 
 
-state 11
+state 13
 	expr : FLOAT_LITERAL .  (7)
 
 	.  reduce 7
 
 
-state 12
+state 14
 	expr : VARIABLE .  (5)
 
 	.  reduce 5
 
 
-state 13
-	%entry% : '\001' prgm .  (18)
-
-	.  reduce 18
-
-
-state 14
-	prgm : exprs . EOF  (1)
-
-	EOF  shift 16
-	.  error
-
-
 state 15
-	exprs : expr . SEMICOLON  (2)
-	expr : expr . ASN expr  (13)
-	expr : expr . PLUS expr  (14)
-	expr : expr . MINUS expr  (15)
-	expr : expr . TIMES expr  (16)
-	expr : expr . DIVIDE expr  (17)
+	%entry% : '\001' prgm .  (24)
 
-	PLUS  shift 17
-	MINUS  shift 18
-	TIMES  shift 19
-	DIVIDE  shift 20
-	ASN  shift 21
-	SEMICOLON  shift 22
-	.  error
+	.  reduce 24
 
 
 state 16
+	prgm : exprs . EOF  (1)
+
+	EOF  shift 20
+	.  error
+
+
+state 17
+	exprs : expr . SEMICOLON  (2)
+	expr : expr . AND expr  (14)
+	expr : expr . OR expr  (15)
+	expr : expr . ASN expr  (16)
+	expr : expr . PLUS expr  (17)
+	expr : expr . MINUS expr  (18)
+	expr : expr . TIMES expr  (19)
+	expr : expr . DIVIDE expr  (20)
+
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIVIDE  shift 24
+	ASN  shift 25
+	OR  shift 26
+	AND  shift 27
+	SEMICOLON  shift 28
+	.  error
+
+
+state 18
+	expr : NOT expr .  (13)
+	expr : expr . AND expr  (14)
+	expr : expr . OR expr  (15)
+	expr : expr . ASN expr  (16)
+	expr : expr . PLUS expr  (17)
+	expr : expr . MINUS expr  (18)
+	expr : expr . TIMES expr  (19)
+	expr : expr . DIVIDE expr  (20)
+
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIVIDE  shift 24
+	OR  shift 26
+	AND  shift 27
+	RPR  reduce 13
+	RBR  reduce 13
+	ASN  reduce 13
+	SEMICOLON  reduce 13
+
+
+state 19
+	expr : IF LPR . expr RPR LBR expr RBR  (21)
+	expr : IF LPR . expr RPR LBR expr RBR ELSE LBR expr RBR  (22)
+	expr : IF LPR . expr RPR LBR expr RBR ELIF LPR expr RPR LBR expr RBR  (23)
+
+	NULL  shift 3
+	TRUE  shift 4
+	FALSE  shift 5
+	NOT  shift 6
+	IF  shift 7
+	INT  shift 8
+	STR  shift 9
+	FLT  shift 10
+	BOOL  shift 11
+	NUM_LITERAL  shift 12
+	FLOAT_LITERAL  shift 13
+	VARIABLE  shift 14
+	.  error
+
+	expr  goto 29
+
+
+state 20
 	prgm : exprs EOF .  (1)
 
 	.  reduce 1
 
 
-state 17
-	expr : expr PLUS . expr  (14)
-
-	NULL  shift 3
-	TRUE  shift 4
-	FALSE  shift 5
-	INT  shift 6
-	STR  shift 7
-	FLT  shift 8
-	BOOL  shift 9
-	NUM_LITERAL  shift 10
-	FLOAT_LITERAL  shift 11
-	VARIABLE  shift 12
-	.  error
-
-	expr  goto 23
-
-
-state 18
-	expr : expr MINUS . expr  (15)
-
-	NULL  shift 3
-	TRUE  shift 4
-	FALSE  shift 5
-	INT  shift 6
-	STR  shift 7
-	FLT  shift 8
-	BOOL  shift 9
-	NUM_LITERAL  shift 10
-	FLOAT_LITERAL  shift 11
-	VARIABLE  shift 12
-	.  error
-
-	expr  goto 24
-
-
-state 19
-	expr : expr TIMES . expr  (16)
-
-	NULL  shift 3
-	TRUE  shift 4
-	FALSE  shift 5
-	INT  shift 6
-	STR  shift 7
-	FLT  shift 8
-	BOOL  shift 9
-	NUM_LITERAL  shift 10
-	FLOAT_LITERAL  shift 11
-	VARIABLE  shift 12
-	.  error
-
-	expr  goto 25
-
-
-state 20
-	expr : expr DIVIDE . expr  (17)
-
-	NULL  shift 3
-	TRUE  shift 4
-	FALSE  shift 5
-	INT  shift 6
-	STR  shift 7
-	FLT  shift 8
-	BOOL  shift 9
-	NUM_LITERAL  shift 10
-	FLOAT_LITERAL  shift 11
-	VARIABLE  shift 12
-	.  error
-
-	expr  goto 26
-
-
 state 21
-	expr : expr ASN . expr  (13)
+	expr : expr PLUS . expr  (17)
 
 	NULL  shift 3
 	TRUE  shift 4
 	FALSE  shift 5
-	INT  shift 6
-	STR  shift 7
-	FLT  shift 8
-	BOOL  shift 9
-	NUM_LITERAL  shift 10
-	FLOAT_LITERAL  shift 11
-	VARIABLE  shift 12
+	NOT  shift 6
+	IF  shift 7
+	INT  shift 8
+	STR  shift 9
+	FLT  shift 10
+	BOOL  shift 11
+	NUM_LITERAL  shift 12
+	FLOAT_LITERAL  shift 13
+	VARIABLE  shift 14
 	.  error
 
-	expr  goto 27
+	expr  goto 30
 
 
 state 22
+	expr : expr MINUS . expr  (18)
+
+	NULL  shift 3
+	TRUE  shift 4
+	FALSE  shift 5
+	NOT  shift 6
+	IF  shift 7
+	INT  shift 8
+	STR  shift 9
+	FLT  shift 10
+	BOOL  shift 11
+	NUM_LITERAL  shift 12
+	FLOAT_LITERAL  shift 13
+	VARIABLE  shift 14
+	.  error
+
+	expr  goto 31
+
+
+state 23
+	expr : expr TIMES . expr  (19)
+
+	NULL  shift 3
+	TRUE  shift 4
+	FALSE  shift 5
+	NOT  shift 6
+	IF  shift 7
+	INT  shift 8
+	STR  shift 9
+	FLT  shift 10
+	BOOL  shift 11
+	NUM_LITERAL  shift 12
+	FLOAT_LITERAL  shift 13
+	VARIABLE  shift 14
+	.  error
+
+	expr  goto 32
+
+
+state 24
+	expr : expr DIVIDE . expr  (20)
+
+	NULL  shift 3
+	TRUE  shift 4
+	FALSE  shift 5
+	NOT  shift 6
+	IF  shift 7
+	INT  shift 8
+	STR  shift 9
+	FLT  shift 10
+	BOOL  shift 11
+	NUM_LITERAL  shift 12
+	FLOAT_LITERAL  shift 13
+	VARIABLE  shift 14
+	.  error
+
+	expr  goto 33
+
+
+state 25
+	expr : expr ASN . expr  (16)
+
+	NULL  shift 3
+	TRUE  shift 4
+	FALSE  shift 5
+	NOT  shift 6
+	IF  shift 7
+	INT  shift 8
+	STR  shift 9
+	FLT  shift 10
+	BOOL  shift 11
+	NUM_LITERAL  shift 12
+	FLOAT_LITERAL  shift 13
+	VARIABLE  shift 14
+	.  error
+
+	expr  goto 34
+
+
+state 26
+	expr : expr OR . expr  (15)
+
+	NULL  shift 3
+	TRUE  shift 4
+	FALSE  shift 5
+	NOT  shift 6
+	IF  shift 7
+	INT  shift 8
+	STR  shift 9
+	FLT  shift 10
+	BOOL  shift 11
+	NUM_LITERAL  shift 12
+	FLOAT_LITERAL  shift 13
+	VARIABLE  shift 14
+	.  error
+
+	expr  goto 35
+
+
+state 27
+	expr : expr AND . expr  (14)
+
+	NULL  shift 3
+	TRUE  shift 4
+	FALSE  shift 5
+	NOT  shift 6
+	IF  shift 7
+	INT  shift 8
+	STR  shift 9
+	FLT  shift 10
+	BOOL  shift 11
+	NUM_LITERAL  shift 12
+	FLOAT_LITERAL  shift 13
+	VARIABLE  shift 14
+	.  error
+
+	expr  goto 36
+
+
+state 28
 	exprs : expr SEMICOLON .  (2)
 
 	.  reduce 2
 
 
-state 23
-	expr : expr . ASN expr  (13)
-	expr : expr . PLUS expr  (14)
-	expr : expr PLUS expr .  (14)
-	expr : expr . MINUS expr  (15)
-	expr : expr . TIMES expr  (16)
-	expr : expr . DIVIDE expr  (17)
+state 29
+	expr : expr . AND expr  (14)
+	expr : expr . OR expr  (15)
+	expr : expr . ASN expr  (16)
+	expr : expr . PLUS expr  (17)
+	expr : expr . MINUS expr  (18)
+	expr : expr . TIMES expr  (19)
+	expr : expr . DIVIDE expr  (20)
+	expr : IF LPR expr . RPR LBR expr RBR  (21)
+	expr : IF LPR expr . RPR LBR expr RBR ELSE LBR expr RBR  (22)
+	expr : IF LPR expr . RPR LBR expr RBR ELIF LPR expr RPR LBR expr RBR  (23)
 
-	TIMES  shift 19
-	DIVIDE  shift 20
-	PLUS  reduce 14
-	MINUS  reduce 14
-	ASN  reduce 14
-	SEMICOLON  reduce 14
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIVIDE  shift 24
+	RPR  shift 37
+	ASN  shift 25
+	OR  shift 26
+	AND  shift 27
+	.  error
 
 
-state 24
-	expr : expr . ASN expr  (13)
-	expr : expr . PLUS expr  (14)
-	expr : expr . MINUS expr  (15)
-	expr : expr MINUS expr .  (15)
-	expr : expr . TIMES expr  (16)
-	expr : expr . DIVIDE expr  (17)
+state 30
+	expr : expr . AND expr  (14)
+	expr : expr . OR expr  (15)
+	expr : expr . ASN expr  (16)
+	expr : expr . PLUS expr  (17)
+	expr : expr PLUS expr .  (17)
+	expr : expr . MINUS expr  (18)
+	expr : expr . TIMES expr  (19)
+	expr : expr . DIVIDE expr  (20)
 
-	TIMES  shift 19
-	DIVIDE  shift 20
-	PLUS  reduce 15
-	MINUS  reduce 15
+	TIMES  shift 23
+	DIVIDE  shift 24
+	PLUS  reduce 17
+	MINUS  reduce 17
+	RPR  reduce 17
+	RBR  reduce 17
+	ASN  reduce 17
+	OR  reduce 17
+	AND  reduce 17
+	SEMICOLON  reduce 17
+
+
+state 31
+	expr : expr . AND expr  (14)
+	expr : expr . OR expr  (15)
+	expr : expr . ASN expr  (16)
+	expr : expr . PLUS expr  (17)
+	expr : expr . MINUS expr  (18)
+	expr : expr MINUS expr .  (18)
+	expr : expr . TIMES expr  (19)
+	expr : expr . DIVIDE expr  (20)
+
+	TIMES  shift 23
+	DIVIDE  shift 24
+	PLUS  reduce 18
+	MINUS  reduce 18
+	RPR  reduce 18
+	RBR  reduce 18
+	ASN  reduce 18
+	OR  reduce 18
+	AND  reduce 18
+	SEMICOLON  reduce 18
+
+
+state 32
+	expr : expr . AND expr  (14)
+	expr : expr . OR expr  (15)
+	expr : expr . ASN expr  (16)
+	expr : expr . PLUS expr  (17)
+	expr : expr . MINUS expr  (18)
+	expr : expr . TIMES expr  (19)
+	expr : expr TIMES expr .  (19)
+	expr : expr . DIVIDE expr  (20)
+
+	.  reduce 19
+
+
+state 33
+	expr : expr . AND expr  (14)
+	expr : expr . OR expr  (15)
+	expr : expr . ASN expr  (16)
+	expr : expr . PLUS expr  (17)
+	expr : expr . MINUS expr  (18)
+	expr : expr . TIMES expr  (19)
+	expr : expr . DIVIDE expr  (20)
+	expr : expr DIVIDE expr .  (20)
+
+	.  reduce 20
+
+
+state 34
+	expr : expr . AND expr  (14)
+	expr : expr . OR expr  (15)
+	expr : expr . ASN expr  (16)
+	expr : expr ASN expr .  (16)
+	expr : expr . PLUS expr  (17)
+	expr : expr . MINUS expr  (18)
+	expr : expr . TIMES expr  (19)
+	expr : expr . DIVIDE expr  (20)
+
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIVIDE  shift 24
+	ASN  shift 25
+	OR  shift 26
+	AND  shift 27
+	RPR  reduce 16
+	RBR  reduce 16
+	SEMICOLON  reduce 16
+
+
+state 35
+	expr : expr . AND expr  (14)
+	expr : expr . OR expr  (15)
+	expr : expr OR expr .  (15)
+	expr : expr . ASN expr  (16)
+	expr : expr . PLUS expr  (17)
+	expr : expr . MINUS expr  (18)
+	expr : expr . TIMES expr  (19)
+	expr : expr . DIVIDE expr  (20)
+
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIVIDE  shift 24
+	RPR  reduce 15
+	RBR  reduce 15
 	ASN  reduce 15
+	OR  reduce 15
+	AND  reduce 15
 	SEMICOLON  reduce 15
 
 
-state 25
-	expr : expr . ASN expr  (13)
-	expr : expr . PLUS expr  (14)
-	expr : expr . MINUS expr  (15)
-	expr : expr . TIMES expr  (16)
-	expr : expr TIMES expr .  (16)
-	expr : expr . DIVIDE expr  (17)
+state 36
+	expr : expr . AND expr  (14)
+	expr : expr AND expr .  (14)
+	expr : expr . OR expr  (15)
+	expr : expr . ASN expr  (16)
+	expr : expr . PLUS expr  (17)
+	expr : expr . MINUS expr  (18)
+	expr : expr . TIMES expr  (19)
+	expr : expr . DIVIDE expr  (20)
 
-	.  reduce 16
-
-
-state 26
-	expr : expr . ASN expr  (13)
-	expr : expr . PLUS expr  (14)
-	expr : expr . MINUS expr  (15)
-	expr : expr . TIMES expr  (16)
-	expr : expr . DIVIDE expr  (17)
-	expr : expr DIVIDE expr .  (17)
-
-	.  reduce 17
-
-
-state 27
-	expr : expr . ASN expr  (13)
-	expr : expr ASN expr .  (13)
-	expr : expr . PLUS expr  (14)
-	expr : expr . MINUS expr  (15)
-	expr : expr . TIMES expr  (16)
-	expr : expr . DIVIDE expr  (17)
-
-	PLUS  shift 17
-	MINUS  shift 18
-	TIMES  shift 19
-	DIVIDE  shift 20
-	ASN  shift 21
-	SEMICOLON  reduce 13
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIVIDE  shift 24
+	RPR  reduce 14
+	RBR  reduce 14
+	ASN  reduce 14
+	OR  reduce 14
+	AND  reduce 14
+	SEMICOLON  reduce 14
 
 
-20 terminals, 5 nonterminals
-19 grammar rules, 28 states
+state 37
+	expr : IF LPR expr RPR . LBR expr RBR  (21)
+	expr : IF LPR expr RPR . LBR expr RBR ELSE LBR expr RBR  (22)
+	expr : IF LPR expr RPR . LBR expr RBR ELIF LPR expr RPR LBR expr RBR  (23)
+
+	LBR  shift 38
+	.  error
+
+
+state 38
+	expr : IF LPR expr RPR LBR . expr RBR  (21)
+	expr : IF LPR expr RPR LBR . expr RBR ELSE LBR expr RBR  (22)
+	expr : IF LPR expr RPR LBR . expr RBR ELIF LPR expr RPR LBR expr RBR  (23)
+
+	NULL  shift 3
+	TRUE  shift 4
+	FALSE  shift 5
+	NOT  shift 6
+	IF  shift 7
+	INT  shift 8
+	STR  shift 9
+	FLT  shift 10
+	BOOL  shift 11
+	NUM_LITERAL  shift 12
+	FLOAT_LITERAL  shift 13
+	VARIABLE  shift 14
+	.  error
+
+	expr  goto 39
+
+
+state 39
+	expr : expr . AND expr  (14)
+	expr : expr . OR expr  (15)
+	expr : expr . ASN expr  (16)
+	expr : expr . PLUS expr  (17)
+	expr : expr . MINUS expr  (18)
+	expr : expr . TIMES expr  (19)
+	expr : expr . DIVIDE expr  (20)
+	expr : IF LPR expr RPR LBR expr . RBR  (21)
+	expr : IF LPR expr RPR LBR expr . RBR ELSE LBR expr RBR  (22)
+	expr : IF LPR expr RPR LBR expr . RBR ELIF LPR expr RPR LBR expr RBR  (23)
+
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIVIDE  shift 24
+	RBR  shift 40
+	ASN  shift 25
+	OR  shift 26
+	AND  shift 27
+	.  error
+
+
+state 40
+	expr : IF LPR expr RPR LBR expr RBR .  (21)
+	expr : IF LPR expr RPR LBR expr RBR . ELSE LBR expr RBR  (22)
+	expr : IF LPR expr RPR LBR expr RBR . ELIF LPR expr RPR LBR expr RBR  (23)
+
+	ELSE  shift 41
+	ELIF  shift 42
+	PLUS  reduce 21
+	MINUS  reduce 21
+	TIMES  reduce 21
+	DIVIDE  reduce 21
+	RPR  reduce 21
+	RBR  reduce 21
+	ASN  reduce 21
+	OR  reduce 21
+	AND  reduce 21
+	SEMICOLON  reduce 21
+
+
+state 41
+	expr : IF LPR expr RPR LBR expr RBR ELSE . LBR expr RBR  (22)
+
+	LBR  shift 43
+	.  error
+
+
+state 42
+	expr : IF LPR expr RPR LBR expr RBR ELIF . LPR expr RPR LBR expr RBR  (23)
+
+	LPR  shift 44
+	.  error
+
+
+state 43
+	expr : IF LPR expr RPR LBR expr RBR ELSE LBR . expr RBR  (22)
+
+	NULL  shift 3
+	TRUE  shift 4
+	FALSE  shift 5
+	NOT  shift 6
+	IF  shift 7
+	INT  shift 8
+	STR  shift 9
+	FLT  shift 10
+	BOOL  shift 11
+	NUM_LITERAL  shift 12
+	FLOAT_LITERAL  shift 13
+	VARIABLE  shift 14
+	.  error
+
+	expr  goto 45
+
+
+state 44
+	expr : IF LPR expr RPR LBR expr RBR ELIF LPR . expr RPR LBR expr RBR  (23)
+
+	NULL  shift 3
+	TRUE  shift 4
+	FALSE  shift 5
+	NOT  shift 6
+	IF  shift 7
+	INT  shift 8
+	STR  shift 9
+	FLT  shift 10
+	BOOL  shift 11
+	NUM_LITERAL  shift 12
+	FLOAT_LITERAL  shift 13
+	VARIABLE  shift 14
+	.  error
+
+	expr  goto 46
+
+
+state 45
+	expr : expr . AND expr  (14)
+	expr : expr . OR expr  (15)
+	expr : expr . ASN expr  (16)
+	expr : expr . PLUS expr  (17)
+	expr : expr . MINUS expr  (18)
+	expr : expr . TIMES expr  (19)
+	expr : expr . DIVIDE expr  (20)
+	expr : IF LPR expr RPR LBR expr RBR ELSE LBR expr . RBR  (22)
+
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIVIDE  shift 24
+	RBR  shift 47
+	ASN  shift 25
+	OR  shift 26
+	AND  shift 27
+	.  error
+
+
+state 46
+	expr : expr . AND expr  (14)
+	expr : expr . OR expr  (15)
+	expr : expr . ASN expr  (16)
+	expr : expr . PLUS expr  (17)
+	expr : expr . MINUS expr  (18)
+	expr : expr . TIMES expr  (19)
+	expr : expr . DIVIDE expr  (20)
+	expr : IF LPR expr RPR LBR expr RBR ELIF LPR expr . RPR LBR expr RBR  (23)
+
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIVIDE  shift 24
+	RPR  shift 48
+	ASN  shift 25
+	OR  shift 26
+	AND  shift 27
+	.  error
+
+
+state 47
+	expr : IF LPR expr RPR LBR expr RBR ELSE LBR expr RBR .  (22)
+
+	.  reduce 22
+
+
+state 48
+	expr : IF LPR expr RPR LBR expr RBR ELIF LPR expr RPR . LBR expr RBR  (23)
+
+	LBR  shift 49
+	.  error
+
+
+state 49
+	expr : IF LPR expr RPR LBR expr RBR ELIF LPR expr RPR LBR . expr RBR  (23)
+
+	NULL  shift 3
+	TRUE  shift 4
+	FALSE  shift 5
+	NOT  shift 6
+	IF  shift 7
+	INT  shift 8
+	STR  shift 9
+	FLT  shift 10
+	BOOL  shift 11
+	NUM_LITERAL  shift 12
+	FLOAT_LITERAL  shift 13
+	VARIABLE  shift 14
+	.  error
+
+	expr  goto 50
+
+
+state 50
+	expr : expr . AND expr  (14)
+	expr : expr . OR expr  (15)
+	expr : expr . ASN expr  (16)
+	expr : expr . PLUS expr  (17)
+	expr : expr . MINUS expr  (18)
+	expr : expr . TIMES expr  (19)
+	expr : expr . DIVIDE expr  (20)
+	expr : IF LPR expr RPR LBR expr RBR ELIF LPR expr RPR LBR expr . RBR  (23)
+
+	PLUS  shift 21
+	MINUS  shift 22
+	TIMES  shift 23
+	DIVIDE  shift 24
+	RBR  shift 51
+	ASN  shift 25
+	OR  shift 26
+	AND  shift 27
+	.  error
+
+
+state 51
+	expr : IF LPR expr RPR LBR expr RBR ELIF LPR expr RPR LBR expr RBR .  (23)
+
+	.  reduce 23
+
+
+30 terminals, 5 nonterminals
+25 grammar rules, 52 states
