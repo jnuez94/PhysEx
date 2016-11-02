@@ -6,10 +6,12 @@
 %token L_PAREN R_PAREN L_BRACE R_BRACE L_BRACKET R_BRACKET
 %token ASN
 %token NULL TRUE FALSE
-%token OR AND NOT
+%token OR AND NOT 
 %token IF ELSE ELIF
 %token INT STR FLT BOOL
 %token SEMICOLON
+%token EQ NEQ LT LEQ GT GEQ
+%token PLSASN SUBASN MULASN DIVASN
 
 %token <int> NUM_LITERAL
 %token <float> FLOAT_LITERAL
@@ -17,10 +19,13 @@
 
 /* Associativity definitions */
 %right ASN
-%right NOT
+
 %left OR AND
+%left EQ NEQ
+%left LT LEQ GT GEQ
 %left PLUS MINUS
 %left TIMES DIVIDE
+%right NOT
 
 %start prgm
 %type <Ast.program> prgm
@@ -52,6 +57,14 @@ expr:
 	| NOT expr						{0}
 	| expr AND expr				{0}
 	| expr OR	expr				{0}
+
+  /* Comparators */
+  | expr EQ expr  {0}
+  | expr NEQ expr {0}
+  | expr LT expr  {0}
+  | expr LEQ expr {0}
+  | expr GT expr  {0}
+  | expr GEQ expr {0}
 
 	/* Arithmetic Operators */
 	| expr ASN expr				{0}
