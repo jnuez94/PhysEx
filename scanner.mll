@@ -4,6 +4,7 @@ rule token =
 	parse [' ' '\t' '\r' '\n']	{ token lexbuf }
 	|	eof												{ EOF }
 	| ';'												{ SEMICOLON }
+	| ','												{ COMMA }
 
 	| ['0'-'9']+ as lit																												{ NUM_LITERAL(int_of_string lit) }
 	| ['0'-'9']+ '.' ['0'-'9'] as lit																					{ FLOAT_LITERAL(float_of_string lit) }
@@ -19,10 +20,12 @@ rule token =
 	| '*' { TIMES }
 	| '/' { DIVIDE }
 
-	| '(' { LPR }
-	| ')' { RPR }
-	| '{' { LBR }
-	| '}' { RBR }
+	| '(' { L_PAREN }
+	| ')' { R_PAREN }
+	| '{' { L_BRACE }
+	| '}' { R_BRACE }
+	| '[' { L_BRACKET }
+	| ']' { R_BRACKET }
 
 	| "||"	{ OR }
 	| '!'		{ NOT }

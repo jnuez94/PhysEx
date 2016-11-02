@@ -4,10 +4,12 @@ type token =
   | MINUS
   | TIMES
   | DIVIDE
-  | LPR
-  | RPR
-  | LBR
-  | RBR
+  | L_PAREN
+  | R_PAREN
+  | L_BRACE
+  | R_BRACE
+  | L_BRACKET
+  | R_BRACKET
   | ASN
   | NULL
   | TRUE

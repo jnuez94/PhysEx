@@ -3,7 +3,7 @@
 /* Token definitions */
 %token EOF
 %token PLUS MINUS TIMES DIVIDE
-%token LPR RPR LBR RBR
+%token L_PAREN R_PAREN L_BRACE R_BRACE L_BRACKET R_BRACKET
 %token ASN
 %token NULL TRUE FALSE
 %token OR AND NOT
@@ -60,9 +60,10 @@ expr:
 	| expr TIMES expr			{0}
 	| expr DIVIDE expr		{0}
 
+	/* Arrays */
+	| L_BRACKET expr R_BRACKET {0}
+
 	/* Conditional */
-	/* I think this is wrong.. will think more */
-	/* what seems more correct is... if expr    elif expr     else expr ... that way its more recursive */
-	| IF LPR expr RPR LBR expr RBR	{0}
-	|	IF LPR expr RPR LBR expr RBR ELSE LBR expr RBR	{0}
-	| IF LPR expr RPR LBR expr RBR ELIF LPR expr RPR LBR expr RBR {0}
+	| IF L_PAREN expr R_PAREN L_BRACE expr R_BRACE	{0}
+	|	IF L_PAREN expr R_PAREN L_BRACE expr R_BRACE ELSE L_BRACE expr R_BRACE	{0}
+	| IF L_PAREN expr R_PAREN L_BRACE expr R_BRACE ELIF L_PAREN expr R_PAREN L_BRACE expr R_BRACE {0}
