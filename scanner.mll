@@ -1,7 +1,9 @@
 { open Parser }
 
-rule token =
-	parse [' ' '\t' '\r' '\n']	{ token lexbuf }
+rule token = parse
+		[' ' '\t' '\r' '\n']	{ token lexbuf }
+	|	"//"									{ comment lexbuf}
+
 	|	eof												{ EOF }
 	| ';'												{ SEMICOLON }
 	| ','												{ COMMA }
@@ -39,3 +41,6 @@ rule token =
 	| "if"			{ IF }
 	| "else"		{ ELSE }
 	| "else if"	{ ELIF }
+
+and comment = parse
+		['\r' '\n']		{ token lexbuf }
