@@ -5,6 +5,7 @@ rule token = parse
 	|	"//"									{ comment lexbuf}
 
 	|	eof												{ EOF }
+	|	':'												{ COLON }
 	| ';'												{ SEMICOLON }
 	| ','												{ COMMA }
 
@@ -37,10 +38,18 @@ rule token = parse
 	| "string"	{ STR }
 	| "float"		{ FLT }
 	| "bool"		{ BOOL }
+	| "blob"		{ BLOB }
 
 	| "if"			{ IF }
 	| "else"		{ ELSE }
 	| "else if"	{ ELIF }
+
+	| "for"			{ FOR }
+	| "while"		{ WHILE }
+
+	| "function"	{ FUNCTION }
+	| "stimulus"	{ STIMULUS }
+	| "return"		{ RETURN }
 
 and comment = parse
 		['\r' '\n']		{ token lexbuf }

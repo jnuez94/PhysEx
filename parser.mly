@@ -3,15 +3,14 @@
 /* Token definitions */
 %token EOF
 %token PLUS MINUS TIMES DIVIDE
-%token L_PAREN R_PAREN L_BRACE R_BRACE L_BRACKET R_BRACKET
-%token ASN
-%token NULL TRUE FALSE
-%token OR AND NOT 
-%token IF ELSE ELIF
-%token INT STR FLT BOOL
-%token SEMICOLON
 %token EQ NEQ LT LEQ GT GEQ
-%token PLSASN SUBASN MULASN DIVASN
+%token L_PAREN R_PAREN L_BRACE R_BRACE L_BRACKET R_BRACKET
+%token ASN PLSASN SUBASN MULASN DIVASN
+%token NULL TRUE FALSE
+%token OR AND NOT
+%token IF ELSE ELIF FOR WHILE
+%token INT STR FLT BOOL BLOB
+%token SEMICOLON COMMA COLON
 
 %token <int> NUM_LITERAL
 %token <float> FLOAT_LITERAL
@@ -38,6 +37,10 @@ prgm:
 exprs:
 	|	expr SEMICOLON			{0}
 
+kv_pairs:
+		/* nothing */										{0}
+	| expr COLON expr COMMA kv_pairs	{0}
+
 expr:
 	/* Literals */
 	| TRUE								{0}
@@ -51,6 +54,7 @@ expr:
 	| INT									{0}
 	| STR 								{0}
 	| BOOL								{0}
+	| BLOB								{0}
 	| NULL								{0}
 
 	/* Logical Operators */
@@ -59,12 +63,12 @@ expr:
 	| expr OR	expr				{0}
 
   /* Comparators */
-  | expr EQ expr  {0}
-  | expr NEQ expr {0}
-  | expr LT expr  {0}
-  | expr LEQ expr {0}
-  | expr GT expr  {0}
-  | expr GEQ expr {0}
+  | expr EQ expr				{0}
+  | expr NEQ expr				{0}
+  | expr LT expr 				{0}
+  | expr LEQ expr				{0}
+  | expr GT expr				{0}
+  | expr GEQ expr				{0}
 
 	/* Arithmetic Operators */
 	| expr ASN expr				{0}
@@ -80,3 +84,10 @@ expr:
 	| IF L_PAREN expr R_PAREN L_BRACE expr R_BRACE	{0}
 	|	IF L_PAREN expr R_PAREN L_BRACE expr R_BRACE ELSE L_BRACE expr R_BRACE	{0}
 	| IF L_PAREN expr R_PAREN L_BRACE expr R_BRACE ELIF L_PAREN expr R_PAREN L_BRACE expr R_BRACE {0}
+
+	/* Loops */
+	| WHILE L_PAREN expr R_PAREN L_BRACE expr R_BRACE {0}
+	| FOR L_PAREN expr SEMICOLON expr SEMICOLON expr R_PAREN L_BRACE expr R_BRACE {0}
+
+	/* Blob definion */
+	| L_BRACE kv_pairs R_BRACE	{0}
