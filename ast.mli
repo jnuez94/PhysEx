@@ -1,13 +1,13 @@
-type operator = Add | Sub | Mul | Div
+type id = string
 
-type logic_operator = And | Or | Ne | Eq | Lt | Lte | Gt | Gte
+type operator =
+	| Add | Sub | Mul | Div
+	| And | Or | Ne | Eq | Lt | Lte | Gt | Gte
+
+type primitive =
+	| T of string
 
 type expr =
-	Binop of expr * operator * expr
-	| Lit of int
-	| Seq of expr * expr
-	| Asn of int * expr
-	| Var of int
+	| NumLit of float
 
-type logic_expr = 
-	
+type program = expr list;;
