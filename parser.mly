@@ -11,7 +11,7 @@
 %token IF ELSE ELIF FOR WHILE
 %token INT STR FLT BOOL BLOB
 %token SEMICOLON COMMA COLON
-%token FUNC
+%token FUNCTION STIMULUS
 
 %token <int> NUM_LITERAL
 %token <float> FLOAT_LITERAL
@@ -32,7 +32,7 @@
 %%
 
 prgm:
-	| decls EOF						{0}
+	| decls EOF	{$1}
 
 decls:
     /* nothing */ {0}
@@ -40,10 +40,10 @@ decls:
   | decls exprs {0}
 
 fdecl:
-  FUNC VARIABLE L_PAREN formals_opt R_PAREN L_BRACE stmt_list R_BRACE {0}
+  FUNCTION VARIABLE L_PAREN formals_opt R_PAREN L_BRACE stmt_list R_BRACE {0}
 
 formals_opt:
-    /* nothing */ {0}
+    /* nothing */ {[]}
   | formal_list {0}
 
 formal_list:
@@ -51,7 +51,7 @@ formal_list:
   | formal_list COMMA expr {0}
 
 stmt_list:
-    /* nothing */ {0}
+    /* nothing */ {[], []}
   | stmt_list exprs {0}
 
 exprs:
@@ -68,7 +68,7 @@ exprs:
 
 	
 kv_pairs:
-		/* nothing */										{0}
+		/* nothing */										{[],[],[],[],[]}
 	| expr COLON expr COMMA kv_pairs	{0}
 
 expr:
