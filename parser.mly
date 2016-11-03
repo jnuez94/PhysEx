@@ -35,23 +35,27 @@ prgm:
 	| decls EOF	{$1}
 
 decls:
-    /* nothing */ {0}
-  | decls fdecl {0}
-  | decls exprs {0}
+    /* nothing */ {[], []}
+  | decls fdecl		{ fst $1, ($2 :: snd $1) }
+  | decls exprs 	{ ($2 :: fst $1), snd $1}
 
 fdecl:
-  FUNCTION VARIABLE L_PAREN formals_opt R_PAREN L_BRACE stmt_list R_BRACE {0}
+  FUNCTION VARIABLE L_PAREN formals_opt R_PAREN L_BRACE stmt_list R_BRACE {{
+		fname = $2;
+		formals = $4;
+		locals = $7;
+	}}
 
 formals_opt:
-    /* nothing */ {[]}
-  | formal_list {0}
+    /* nothing */		{[]}
+  | formal_list			{$1}
 
 formal_list:
-    expr  {0}
-  | formal_list COMMA expr {0}
+    expr 										{$1}
+  | formal_list COMMA expr	{$3}
 
 stmt_list:
-    /* nothing */ {[], []}
+    /* nothing */		{[], []}
   | stmt_list exprs {0}
 
 exprs:
@@ -66,7 +70,7 @@ exprs:
 	| WHILE L_PAREN expr R_PAREN L_BRACE expr R_BRACE {0}
 	| FOR L_PAREN expr SEMICOLON expr SEMICOLON expr R_PAREN L_BRACE expr R_BRACE {0}
 
-	
+
 kv_pairs:
 		/* nothing */										{[],[],[],[],[]}
 	| expr COLON expr COMMA kv_pairs	{0}
@@ -101,7 +105,7 @@ expr:
   | expr GEQ expr				{0}
 
 	/* Arithmetic Operators */
-	| VARIABLE ASN expr				{0}
+	| VARIABLE ASN expr		{0}
 	| expr PLUS expr			{0}
 	| expr MINUS expr			{0}
 	| expr TIMES expr			{0}
