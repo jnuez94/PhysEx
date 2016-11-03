@@ -11,6 +11,7 @@
 %token IF ELSE ELIF FOR WHILE
 %token INT STR FLT BOOL BLOB
 %token SEMICOLON COMMA COLON
+%token FUNC
 
 %token <int> NUM_LITERAL
 %token <float> FLOAT_LITERAL
@@ -18,7 +19,6 @@
 
 /* Associativity definitions */
 %right ASN
-
 %left OR AND
 %left EQ NEQ
 %left LT LEQ GT GEQ
@@ -32,11 +32,41 @@
 %%
 
 prgm:
-	| exprs EOF						{0}
+	| decls EOF						{0}
+
+decls:
+    /* nothing */ {0}
+  | decls fdecl {0}
+  | decls exprs {0}
+
+fdecl:
+  FUNC VARIABLE L_PAREN formals_opt R_PAREN L_BRACE stmt_list R_BRACE {0}
+
+formals_opt:
+    /* nothing */ {0}
+  | formal_list {0}
+
+formal_list:
+    expr  {0}
+  | formal_list COMMA expr {0}
+
+stmt_list:
+    /* nothing */ {0}
+  | stmt_list exprs {0}
 
 exprs:
-	|	expr SEMICOLON			{0}
+	|	expr SEMICOLON  {0}
 
+	/* Conditional */
+	| IF L_PAREN expr R_PAREN L_BRACE expr R_BRACE	{0}
+	|	IF L_PAREN expr R_PAREN L_BRACE expr R_BRACE ELSE L_BRACE expr R_BRACE	{0}
+	| IF L_PAREN expr R_PAREN L_BRACE expr R_BRACE ELIF L_PAREN expr R_PAREN L_BRACE expr R_BRACE {0}
+
+	/* Loops */
+	| WHILE L_PAREN expr R_PAREN L_BRACE expr R_BRACE {0}
+	| FOR L_PAREN expr SEMICOLON expr SEMICOLON expr R_PAREN L_BRACE expr R_BRACE {0}
+
+	
 kv_pairs:
 		/* nothing */										{0}
 	| expr COLON expr COMMA kv_pairs	{0}
@@ -50,10 +80,10 @@ expr:
 	| FLOAT_LITERAL				{0}
 
 	/* Primitives */
-	| FLT									{0}
-	| INT									{0}
-	| STR 								{0}
-	| BOOL								{0}
+  | INT                 {0}
+  | FLT                 {0}
+  | STR                 {0}
+  | BOOL                {0}
 	| BLOB								{0}
 	| NULL								{0}
 
@@ -71,7 +101,7 @@ expr:
   | expr GEQ expr				{0}
 
 	/* Arithmetic Operators */
-	| expr ASN expr				{0}
+	| VARIABLE ASN expr				{0}
 	| expr PLUS expr			{0}
 	| expr MINUS expr			{0}
 	| expr TIMES expr			{0}
@@ -79,15 +109,6 @@ expr:
 
 	/* Arrays */
 	| L_BRACKET expr R_BRACKET {0}
-
-	/* Conditional */
-	| IF L_PAREN expr R_PAREN L_BRACE expr R_BRACE	{0}
-	|	IF L_PAREN expr R_PAREN L_BRACE expr R_BRACE ELSE L_BRACE expr R_BRACE	{0}
-	| IF L_PAREN expr R_PAREN L_BRACE expr R_BRACE ELIF L_PAREN expr R_PAREN L_BRACE expr R_BRACE {0}
-
-	/* Loops */
-	| WHILE L_PAREN expr R_PAREN L_BRACE expr R_BRACE {0}
-	| FOR L_PAREN expr SEMICOLON expr SEMICOLON expr R_PAREN L_BRACE expr R_BRACE {0}
 
 	/* Blob definion */
 	| L_BRACE kv_pairs R_BRACE	{0}
