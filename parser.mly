@@ -11,11 +11,11 @@
 %token IF ELSE ELIF FOR WHILE
 %token INT STR FLT BOOL BLOB
 %token SEMICOLON COMMA COLON
-%token FUNCTION STIMULUS
+%token FUNCTION STIMULUS RETURN
 
 %token <int> NUM_LITERAL
 %token <float> FLOAT_LITERAL
-%token <string> VARIABLE
+%token <string> ID
 
 /* Associativity definitions */
 %right ASN
@@ -40,7 +40,7 @@ decls:
   | decls exprs 	{ ($2 :: fst $1), snd $1}
 
 fdecl:
-  FUNCTION VARIABLE L_PAREN formals_opt R_PAREN L_BRACE stmt_list R_BRACE {{
+  FUNCTION ID L_PAREN formals_opt R_PAREN L_BRACE stmt_list R_BRACE {{
 		fname = $2;
 		formals = $4;
 		locals = $7;
@@ -55,11 +55,14 @@ formal_list:
   | formal_list COMMA expr	{$3}
 
 stmt_list:
-    /* nothing */		{[], []}
-  | stmt_list exprs {0}
+    /* nothing */		{[]}
+  | stmt_list exprs {$2 :: $1}
 
 exprs:
-	|	expr SEMICOLON  {0}
+		expr SEMICOLON  			{Expr $1}
+	| RETURN SEMICOLON			{Return Noexpr}
+	| RETURN expr SEMICOLON	{Return $2}
+
 
 	/* Conditional */
 	| IF L_PAREN expr R_PAREN L_BRACE expr R_BRACE	{0}
@@ -79,7 +82,7 @@ expr:
 	/* Literals */
 	| TRUE								{0}
 	| FALSE								{0}
-	| VARIABLE						{0}
+	| ID									{0}
 	| NUM_LITERAL					{0}
 	| FLOAT_LITERAL				{0}
 
@@ -105,7 +108,7 @@ expr:
   | expr GEQ expr				{0}
 
 	/* Arithmetic Operators */
-	| VARIABLE ASN expr		{0}
+	| ID ASN expr		{0}
 	| expr PLUS expr			{0}
 	| expr MINUS expr			{0}
 	| expr TIMES expr			{0}

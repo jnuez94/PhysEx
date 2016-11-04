@@ -5,6 +5,10 @@ type op =
 	| Div
 	| Equal
 
+type uop =
+		Neg
+	| Not
+
 type typ =
 		Int
 	| Bool
@@ -12,19 +16,28 @@ type typ =
 	| String
 
 type expr =
-		BoolLit of bool
+		Literal of int
 	| Id of string
+	| Binop of expr * op * expr
+	| Assign of string * expr
+	| BoolLit of bool
+	| Noexpr
+	| Unop of uop * expr
+	| Call of string * expr list
 
 type stmt =
 		Block of stmt list
 	| Expr of expr
 	| If of expr * stmt * stmt
+	| For of expr * expr * expr * stmt
+	| While of expr * stmt
+	| Return of expr
 
 type bind = typ * string
 
 type func_decl = {
 	fname 			: string;
-	formals			: int list;
+	formals			: bind list;
 	locals			: bind list;
 }
 
