@@ -82,10 +82,13 @@ stmt:
 
 
 kv_pairs:
-	| kv_pair COMMA kv_pairs {$1 :: $3}
+	| kv_pair COMMA kv_pairs 	{$1 :: $3}
 
 kv_pair:
 	| expr COLON expr			{$1, $3}
+
+arr:
+	| expr COMMA					{$1}
 
 typ:
 	 	INT                 {Int}
@@ -123,8 +126,8 @@ expr:
 	| expr TIMES expr			{Binop($1, Mult, $3)}
 	| expr DIVIDE expr		{Binop($1, Div, $3)}
 
-	/* Arrays *
-	| L_BRACKET expr R_BRACKET {0}*/
+	/* Arrays */
+	| L_BRACKET arr R_BRACKET 	{$2}
 
 	/* Blob definion */
 	| L_BRACE kv_pairs R_BRACE	{MapLit($2)}
