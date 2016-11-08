@@ -80,10 +80,10 @@ stmt:
 	| WHILE L_PAREN expr R_PAREN L_BRACE stmt R_BRACE {While($3, $6)}
 	| FOR L_PAREN expr SEMICOLON expr SEMICOLON expr R_PAREN L_BRACE stmt R_BRACE {For ($3, $5, $7, $10)}
 
-
+/*
 kv_pairs:
-		/* nothing */										{[],[],[],[],[]}
-	| expr COLON expr COMMA kv_pairs	{0}
+		/* nothing *										{[],[],[],[],[]}
+	| expr COLON expr COMMA kv_pairs	{($1, $3) :: $5}*/
 
 typ:
 	 	INT                 {Int}
@@ -102,27 +102,27 @@ expr:
 	| FLOAT_LITERAL				{FloatLit($1)}
 
 	/* Logical Operators */
-	| NOT expr						{0}
-	| expr AND expr				{0}
-	| expr OR	expr				{0}
+	| NOT expr						{Unop(Not, $2)}
+	| expr AND expr				{Binop($1, And, $3)}
+	| expr OR	expr				{Binop($1, Or, $3)}
 
   /* Comparators */
-  | expr EQ expr				{0}
-  | expr NEQ expr				{0}
-  | expr LT expr 				{0}
-  | expr LEQ expr				{0}
-  | expr GT expr				{0}
-  | expr GEQ expr				{0}
+  | expr EQ expr				{Binop($1, Equal, $3)}
+  | expr NEQ expr				{Binop($1, Neq, $3)}
+  | expr LT expr 				{Binop($1, Less, $3)}
+  | expr LEQ expr				{Binop($1, Leq, $3)}
+  | expr GT expr				{Binop($1, Greater, $3)}
+  | expr GEQ expr				{Binop($1, Geq, $3)}
 
 	/* Arithmetic Operators */
-	| ID ASN expr		{0}
-	| expr PLUS expr			{0}
-	| expr MINUS expr			{0}
-	| expr TIMES expr			{0}
-	| expr DIVIDE expr		{0}
+	| ID ASN expr					{Assign($1, $3)}
+	| expr PLUS expr			{Binop($1, Add, $3)}
+	| expr MINUS expr			{Binop($1, Sub, $3)}
+	| expr TIMES expr			{Binop($1, Mult, $3)}
+	| expr DIVIDE expr		{Binop($1, Div, $3)}
 
-	/* Arrays */
-	| L_BRACKET expr R_BRACKET {0}
+	/* Arrays *
+	| L_BRACKET expr R_BRACKET {0}*/
 
 	/* Blob definion */
 	| L_BRACE kv_pairs R_BRACE	{0}

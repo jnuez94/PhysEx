@@ -4,6 +4,13 @@ type op =
 	| Mult
 	| Div
 	| Equal
+	| And
+	| Or
+	| Neq
+	| Less
+	| Leq
+	| Greater
+	| Geq
 
 type uop =
 		Neg
@@ -13,14 +20,16 @@ type typ =
 		Int
 	| Bool
 	| Blob
+	| Null
 	| Float
 	| String
 
 type bind = typ * string
 
 type expr =
-		Literal of int
+		NumLit of int
 	| BoolLit of bool
+	| FloatLit of float
 	| Id of string
 	| Noexpr
 	| Binop of expr * op * expr
