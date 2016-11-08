@@ -37,62 +37,69 @@ prgm:
 decls:
     /* nothing */ {[], []}
   | decls fdecl		{ fst $1, ($2 :: snd $1) }
-  | decls exprs 	{ ($2 :: fst $1), snd $1}
+  | decls vdecl 	{ ($2 :: fst $1), snd $1}
 
 fdecl:
-  FUNCTION ID L_PAREN formals_opt R_PAREN L_BRACE stmt_list R_BRACE {{
+  FUNCTION ID L_PAREN formals_opt R_PAREN L_BRACE vdecl_list stmt_list R_BRACE {{
 		fname = $2;
 		formals = $4;
-		locals = $7;
+		locals = List.rev $7;
+		body = List.rev $8;
 	}}
 
 formals_opt:
     /* nothing */		{[]}
-  | formal_list			{$1}
+  | formal_list			{List.rev $1}
 
 formal_list:
-    expr 										{$1}
-  | formal_list COMMA expr	{$3}
+    typ ID 											{[($1, $2)]}
+  | formal_list COMMA typ ID	{($3, $4) :: $1}
+
+vdecl_list:
+		/* nothing */			{[]}
+	|	vdecl_list vdecl	{$2 :: $1}
+
+vdecl:
+		typ ID SEMICOLON {($1, $2)}
 
 stmt_list:
     /* nothing */		{[]}
-  | stmt_list exprs {$2 :: $1}
+  | stmt_list stmt {$2 :: $1}
 
-exprs:
+stmt:
 		expr SEMICOLON  			{Expr $1}
 	| RETURN SEMICOLON			{Return Noexpr}
 	| RETURN expr SEMICOLON	{Return $2}
 
-
 	/* Conditional */
-	| IF L_PAREN expr R_PAREN L_BRACE expr R_BRACE	{0}
-	|	IF L_PAREN expr R_PAREN L_BRACE expr R_BRACE ELSE L_BRACE expr R_BRACE	{0}
-	| IF L_PAREN expr R_PAREN L_BRACE expr R_BRACE ELIF L_PAREN expr R_PAREN L_BRACE expr R_BRACE {0}
+	| IF L_PAREN expr R_PAREN L_BRACE stmt R_BRACE	{If ($3, $6, Block([]))}
+	|	IF L_PAREN expr R_PAREN L_BRACE stmt R_BRACE ELSE L_BRACE stmt R_BRACE	{If ($3, $6, $10)}
+	/*| IF L_PAREN expr R_PAREN L_BRACE stmt R_BRACE ELIF L_PAREN stmt R_PAREN L_BRACE stmt R_BRACE {0}*/
 
 	/* Loops */
-	| WHILE L_PAREN expr R_PAREN L_BRACE expr R_BRACE {0}
-	| FOR L_PAREN expr SEMICOLON expr SEMICOLON expr R_PAREN L_BRACE expr R_BRACE {0}
+	| WHILE L_PAREN expr R_PAREN L_BRACE stmt R_BRACE {While($3, $6)}
+	| FOR L_PAREN expr SEMICOLON expr SEMICOLON expr R_PAREN L_BRACE stmt R_BRACE {For ($3, $5, $7, $10)}
 
 
 kv_pairs:
 		/* nothing */										{[],[],[],[],[]}
 	| expr COLON expr COMMA kv_pairs	{0}
 
+typ:
+	 	INT                 {Int}
+	| FLT                 {Float}
+	| STR                 {String}
+	| BOOL                {Bool}
+	| BLOB								{Blob}
+	| NULL								{Null}
+
 expr:
 	/* Literals */
-	| TRUE								{0}
-	| FALSE								{0}
-	| ID									{0}
-	| NUM_LITERAL					{0}
-	| FLOAT_LITERAL				{0}
-
-	/* Primitives */
-  | INT                 {0}
-  | FLT                 {0}
-  | STR                 {0}
-  | BOOL                {0}
-	| BLOB								{0}
-	| NULL								{0}
+	| TRUE								{BoolLit(true)}
+	| FALSE								{BoolLit(false)}
+	| ID									{Id($1)}
+	| NUM_LITERAL					{NumLit($1)}
+	| FLOAT_LITERAL				{FloatLit($1)}
 
 	/* Logical Operators */
 	| NOT expr						{0}

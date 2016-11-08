@@ -13,16 +13,19 @@ type typ =
 		Int
 	| Bool
 	| Blob
+	| Float
 	| String
+
+type bind = typ * string
 
 type expr =
 		Literal of int
-	| Id of string
-	| Binop of expr * op * expr
-	| Assign of string * expr
 	| BoolLit of bool
+	| Id of string
 	| Noexpr
+	| Binop of expr * op * expr
 	| Unop of uop * expr
+	| Assign of string * expr
 	| Call of string * expr list
 
 type stmt =
@@ -33,12 +36,11 @@ type stmt =
 	| While of expr * stmt
 	| Return of expr
 
-type bind = typ * string
-
 type func_decl = {
 	fname 			: string;
 	formals			: bind list;
 	locals			: bind list;
+	body				: stmt list;
 }
 
 type program = bind list * func_decl list
