@@ -80,10 +80,12 @@ stmt:
 	| WHILE L_PAREN expr R_PAREN L_BRACE stmt R_BRACE {While($3, $6)}
 	| FOR L_PAREN expr SEMICOLON expr SEMICOLON expr R_PAREN L_BRACE stmt R_BRACE {For ($3, $5, $7, $10)}
 
-/*
+
 kv_pairs:
-		/* nothing *										{[],[],[],[],[]}
-	| expr COLON expr COMMA kv_pairs	{($1, $3) :: $5}*/
+	| kv_pair COMMA kv_pairs {$1 :: $3}
+
+kv_pair:
+	| expr COLON expr			{$1, $3}
 
 typ:
 	 	INT                 {Int}
@@ -94,7 +96,7 @@ typ:
 	| NULL								{Null}
 
 expr:
-	/* Literals */
+		/* Literals */
 	| TRUE								{BoolLit(true)}
 	| FALSE								{BoolLit(false)}
 	| ID									{Id($1)}
@@ -125,4 +127,4 @@ expr:
 	| L_BRACKET expr R_BRACKET {0}*/
 
 	/* Blob definion */
-	| L_BRACE kv_pairs R_BRACE	{0}
+	| L_BRACE kv_pairs R_BRACE	{MapLit($2)}

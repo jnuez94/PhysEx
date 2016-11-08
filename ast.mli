@@ -36,6 +36,7 @@ type expr =
 	| Unop of uop * expr
 	| Assign of string * expr
 	| Call of string * expr list
+	| MapLit of (expr * expr) list
 
 type stmt =
 		Block of stmt list
