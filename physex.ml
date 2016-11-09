@@ -1,4 +1,4 @@
 let _ =
 	let lexbuf = Lexing.from_channel stdin in
 		let ast = Parser.prgm Scanner.token lexbuf in
-			Semantic.eval ast;
+			Semantic.checker ast;
