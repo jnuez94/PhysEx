@@ -1,90 +1,133 @@
 %{ open Ast %}
 
-%token LBR LPR RBR RPR SEMICOLON
-%token PLUS MINUS TIMES DIVIDE EOF ASN COMMA 
-%token MULTASN DIVASN PLUSASN SUBASN NE EQ LT LTE GT GTE
-%token OR AND NOT NEG IF ELSE ELIF WHILE FOR FUNC STIM INT CHAR
-%token STR FLT BOOL BLOB
+/* Token definitions */
+%token EOF
+%token PLUS MINUS TIMES DIVIDE
+%token EQ NEQ LT LEQ GT GEQ
+%token L_PAREN R_PAREN L_BRACE R_BRACE L_BRACKET R_BRACKET
+%token ASN PLSASN SUBASN MULASN DIVASN
+%token NULL TRUE FALSE
+%token OR AND NOT
+%token IF ELSE ELIF FOR WHILE
+%token INT STR FLT BOOL BLOB
+%token SEMICOLON COMMA COLON
+%token FUNCTION STIMULUS RETURN
 
-% <int> LITERAL
-% <int> VARIABLE
+%token <int> NUM_LITERAL
+%token <float> FLOAT_LITERAL
+%token <string> ID
 
+/* Associativity definitions */
 %right ASN
-%left OR
-%left AND
+%left OR AND
 %left EQ NEQ
-%left LT GT LTE GTE
+%left LT LEQ GT GEQ
 %left PLUS MINUS
 %left TIMES DIVIDE
-%right NOT NEG
+%right NOT
 
-%start expr
-%type < Ast.expr > expr
+%start prgm
+%type <Ast.program> prgm
 
 %%
 
-expr:
-	expr	PLUS 	expr	{ 0 }
-| 	expr	MINUS 	expr	{ 0 }
-| 	expr	TIMES	expr	{ 0 }
-| 	expr	DIVIDE	expr	{ 0 }
-| 	expr	COMMA	expr	{ 0 }
-|   NEG		expr 			{ 0 }
-|	asn
-|	loop
-| 	LITERAL					{ 0 }
-| 	VARIABLE				{ 0 }
+prgm:
+	| decls EOF	{$1}
 
-
-asn:
-	VARIABLE 	ASN			expr	{ 0 }
-| 	VARIABLE 	MULTASN 	expr 	{ 0 }
-|	VARIABLE 	DIVASN 		expr 	{ 0 }
-|	VARIABLE 	PLUSASN 	expr 	{ 0 }
-|	VARIABLE 	SUBASN 		expr 	{ 0 }
-|   VARIABLE	ASN         l_expr 	{ 0 }
- 
-
-l_expr:
- 	NOT 		l_expr			{ 0 }
-| 	l_expr 		AND		l_expr 	{ 0 }
-| 	l_expr 		OR		l_expr 	{ 0 }
-| 	BOOL
-
-loop:
-	IF 	LPR l_expr 	RPR LBR expr RBR { 0 }
-| 	FOR LPR asn SEMICOLON l_expr SEMICOLON ASN RPR LBR expr RBR { 0 }
-|	WHILE LPR l_expr RPR LBR expr RBR { 0 }
-|	IF 	LPR l_expr 	RPR LBR expr RBR ELSE LBR expr RBR { 0 }
-| 	IF 	LPR l_expr 	RPR LBR expr RBR ELIF LPR l_expr RPRLBR expr RBR { 0 }
-
-program: decls EOF { 0 }
-
-decls:  { 0 }
-| decls vdecl { 0 }
-| decls fdecl { 0 }
-| decls expr { 0 }
+decls:
+    /* nothing */ {[], []}
+  | decls fdecl		{ fst $1, ($2 :: snd $1) }
+  | decls vdecl 	{ ($2 :: fst $1), snd $1}
 
 fdecl:
+  FUNCTION ID L_PAREN formals_opt R_PAREN L_BRACE vdecl_list stmt_list R_BRACE {{
+		fname = $2;
+		formals = $4;
+		locals = List.rev $7;
+		body = List.rev $8;
+	}}
 
-FUNC VARIABLE LPR formal_list RPR LBR vdecl_list stmt_list RBR { 0 }
+formals_opt:
+    /* nothing */		{[]}
+  | formal_list			{List.rev $1}
 
-formal_list: 
-typ VARIABLE { 0 }
-| formal_list COMMA typ VARIABLE { 0 }
+formal_list:
+    typ ID 											{[($1, $2)]}
+  | formal_list COMMA typ ID	{($3, $4) :: $1}
 
-typ: INT { 0 }
-| CHAR { 0 }
-| STR { 0 }
-| BLOB { 0 }
-| FLT
-| BOOL { 0 }
-| NULL { 0 }
+vdecl_list:
+		/* nothing */			{[]}
+	|	vdecl_list vdecl	{$2 :: $1}
 
-vdecl_list:  { 0 }
-| vdecl_list vdecl { 0 }
+vdecl:
+		typ ID SEMICOLON {($1, $2)}
 
-vdecl: typ VARIABLE SEMICOLON { 0 }
+stmt_list:
+    /* nothing */		{[]}
+  | stmt_list stmt {$2 :: $1}
 
-stmt_list: {0}
-| expr {0}
+stmt:
+		expr SEMICOLON  			{Expr $1}
+	| RETURN SEMICOLON			{Return Noexpr}
+	| RETURN expr SEMICOLON	{Return $2}
+
+	/* Conditional */
+	| IF L_PAREN expr R_PAREN L_BRACE stmt R_BRACE	{If ($3, $6, Block([]))}
+	|	IF L_PAREN expr R_PAREN L_BRACE stmt R_BRACE ELSE L_BRACE stmt R_BRACE	{If ($3, $6, $10)}
+	/*| IF L_PAREN expr R_PAREN L_BRACE stmt R_BRACE ELIF L_PAREN stmt R_PAREN L_BRACE stmt R_BRACE {0}*/
+
+	/* Loops */
+	| WHILE L_PAREN expr R_PAREN L_BRACE stmt R_BRACE {While($3, $6)}
+	| FOR L_PAREN expr SEMICOLON expr SEMICOLON expr R_PAREN L_BRACE stmt R_BRACE {For ($3, $5, $7, $10)}
+
+
+kv_pairs:
+	| kv_pair COMMA kv_pairs 	{$1 :: $3}
+
+kv_pair:
+	| expr COLON expr			{$1, $3}
+
+arr:
+	| expr COMMA					{$1}
+
+typ:
+	 	INT                 {Int}
+	| FLT                 {Float}
+	| STR                 {String}
+	| BOOL                {Bool}
+	| BLOB								{Blob}
+	| NULL								{Null}
+
+expr:
+		/* Literals */
+	| TRUE								{BoolLit(true)}
+	| FALSE								{BoolLit(false)}
+	| ID									{Id($1)}
+	| NUM_LITERAL					{NumLit($1)}
+	| FLOAT_LITERAL				{FloatLit($1)}
+
+	/* Logical Operators */
+	| NOT expr						{Unop(Not, $2)}
+	| expr AND expr				{Binop($1, And, $3)}
+	| expr OR	expr				{Binop($1, Or, $3)}
+
+  /* Comparators */
+  | expr EQ expr				{Binop($1, Equal, $3)}
+  | expr NEQ expr				{Binop($1, Neq, $3)}
+  | expr LT expr 				{Binop($1, Less, $3)}
+  | expr LEQ expr				{Binop($1, Leq, $3)}
+  | expr GT expr				{Binop($1, Greater, $3)}
+  | expr GEQ expr				{Binop($1, Geq, $3)}
+
+	/* Arithmetic Operators */
+	| ID ASN expr					{Assign($1, $3)}
+	| expr PLUS expr			{Binop($1, Add, $3)}
+	| expr MINUS expr			{Binop($1, Sub, $3)}
+	| expr TIMES expr			{Binop($1, Mult, $3)}
+	| expr DIVIDE expr		{Binop($1, Div, $3)}
+
+	/* Arrays */
+	| L_BRACKET arr R_BRACKET 	{$2}
+
+	/* Blob definion */
+	| L_BRACE kv_pairs R_BRACE	{MapLit($2)}

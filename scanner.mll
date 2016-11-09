@@ -1,56 +1,55 @@
 { open Parser }
 
 rule token = parse
-[' ' '\t' '\r' '\n'] { token lexbuf }
-| '+' { PLUS }
-| '-' { MINUS }
-| '*' { TIMES }
-| '/' { DIVIDE }
-| '%' { MOD }
+		[' ' '\t' '\r' '\n']	{ token lexbuf }
+	|	"//"									{ comment lexbuf}
 
-| ['0'-'9']+ as lit { LITERAL(int_of_string lit) }
-| eof { EOF }
-| '$'['0'-'9'] as lit { VARIABLE(int_of_char lit.[1] - 48) }
-| ',' { COMMA }
+	|	eof												{ EOF }
+	|	':'												{ COLON }
+	| ';'												{ SEMICOLON }
+	| ','												{ COMMA }
 
-| '=' { ASN }
-| "*=" { MULTASN }
-| "/=" { DIVASN }
-| "+=" { PLUSASN }
-| "-=" { SUBASN }
+	| ['0'-'9']+ as lit																												{ NUM_LITERAL(int_of_string lit) }
+	| ['0'-'9']+ '.' ['0'-'9'] as lit																					{ FLOAT_LITERAL(float_of_string lit) }
+	| ['$' '_' 'a'-'z' 'A'-'Z'] ['$' '_' '-' 'a'-'z' 'A'-'Z' '0'-'9']* as lit { ID(lit) }
 
-| "!=" { NE }
-| "==" { EQ }
-| "<" { LT }
-| "<=" { LTE }
-| ">" { GT }
-| ">=" { GTE }
+	| "null"	{ NULL }
+	| "true"	{ TRUE }
+	| "false"	{ FALSE }
 
-| "||" { OR }
-| "&&" { AND }
-| '!' { NOT }
+	|	'=' { ASN }
+	| '+'	{ PLUS }
+	| '-' { MINUS }
+	| '*' { TIMES }
+	| '/' { DIVIDE }
 
-| "if" { IF }
-| "else" { ELSE }
-| "else if" { ELIF }
+	| '(' { L_PAREN }
+	| ')' { R_PAREN }
+	| '{' { L_BRACE }
+	| '}' { R_BRACE }
+	| '[' { L_BRACKET }
+	| ']' { R_BRACKET }
 
-| "while" { WHILE }
-| "for" { FOR }
+	| "||"	{ OR }
+	| '!'		{ NOT }
+	| "&&"	{ AND }
 
-| "function" { FUNC }
-| "stimulus" { STIM }
+	| "int"			{ INT }
+	| "string"	{ STR }
+	| "float"		{ FLT }
+	| "bool"		{ BOOL }
+	| "blob"		{ BLOB }
 
-| "int" { INT }
-| "char" { CHAR }
-| "string" { STR }
-| "float" { FLT }
-| "bool" { BOOL }
-| "blob" { BLOB }
-| "null" { NULL }
+	| "if"			{ IF }
+	| "else"		{ ELSE }
+	| "else if"	{ ELIF }
 
-| '(' { LPR }
-| ')' { RPR }
-| '{' { LBR }
-| '}' { RBR }
+	| "for"			{ FOR }
+	| "while"		{ WHILE }
 
-| ';' { SEMICOLON }
+	| "return"		{ RETURN }
+	| "function"	{ FUNCTION }
+	| "stimulus"	{ STIMULUS }
+
+and comment = parse
+		['\r' '\n']		{ token lexbuf }
