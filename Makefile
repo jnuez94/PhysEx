@@ -1,7 +1,7 @@
 build:
 	ocamllex scanner.mll
 	ocamlyacc -v parser.mly
-	ocamlc -c ast.mli
+	ocamlc -c ast.ml
 	ocamlc -c parser.mli
 	ocamlc -c scanner.ml
 	ocamlc -c parser.ml

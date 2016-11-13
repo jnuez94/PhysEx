@@ -26,12 +26,12 @@
 %left TIMES DIVIDE
 %right NOT
 
-%start prgm
-%type <Ast.program> prgm
+%start program
+%type <Ast.program> program
 
 %%
 
-prgm:
+program:
 	| decls EOF	{$1}
 
 decls:
