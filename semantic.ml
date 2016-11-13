@@ -52,23 +52,20 @@ let built_in_decls = StringMap.add "print"
 		formals = [];
 		locals = [];
 		body = []
-	} (StringMap.add "xxx" {
-		fname = "xxx";
-		formals = [];
-		locals = [];
-		body = []
-	})
+	}
 in
 let function_decls =
-	List.fold_left (fun m fd -> StringMap.add fd.fname fd m)
-		built_in_decls functions
+	List.fold_left (fun m fd -> StringMap.add fd.fname fd m) built_in_decls functions
 in
 let function_decl s = try StringMap.find s function_decls
 	with Not_found -> raise (Failure ("unrecognized function " ^ s))
 in
+!!!!! more here !!!!
 
 (**	Return the type of an expression or throw an error
  *----------------------------------------------------------------------------*)
 let rec expr = function
 		NumList _ -> Int
 	| BoolLit _ -> Bool
+in
+List.iter check_function functions

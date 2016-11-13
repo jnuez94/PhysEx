@@ -9,7 +9,7 @@
 %token NULL TRUE FALSE
 %token OR AND NOT
 %token IF ELSE ELIF FOR WHILE
-%token INT STR FLT BOOL BLOB
+%token INT STR FLT BOOL BLOB VOID
 %token SEMICOLON COMMA COLON
 %token FUNCTION STIMULUS RETURN
 
@@ -97,6 +97,7 @@ typ:
 	| BOOL                {Bool}
 	| BLOB								{Blob}
 	| NULL								{Null}
+	|	VOID								{Void}
 
 expr:
 		/* Literals */

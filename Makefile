@@ -7,7 +7,7 @@ build:
 	ocamlc -c parser.ml
 	ocamlc -c semantic.ml
 	ocamlc -c physex.ml
-	ocamlc -o physex parser.cmo scanner.cmo ast.cmo physex.cmo
+	ocamlc -o physex parser.cmo scanner.cmo ast.cmo semantic.cmo physex.cmo
 
 clean:
 	ocamlbuild -clean

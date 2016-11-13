@@ -39,6 +39,7 @@ rule token = parse
 	| "float"		{ FLT }
 	| "bool"		{ BOOL }
 	| "blob"		{ BLOB }
+	| "void"		{ VOID }
 
 	| "if"			{ IF }
 	| "else"		{ ELSE }
