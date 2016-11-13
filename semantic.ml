@@ -26,6 +26,30 @@ let checker (globals, functions) =
 		| _ -> ()
 	in
 
+	(* Defend built-in functions *)
+	if List.mem "print" (List.map (fun fd -> fd.fname) functions)
+	then raise (Failure ("function print may not be defined")) else ();
+	report_duplicate (fun n -> "duplicate function " ^ n)
+		(List.map (fun fd -> fd.fname) functions);
+
+(**	Declare built-in functions
+ *----------------------------------------------------------------------------*)
+	let built_in_decls = StringMap.singleton "print" {
+		fname = "print";
+		formals = [(String, "x")];
+		locals = [];
+		body = []
+	}
+	in
+	let function_decls =
+ 		List.fold_left (fun m fd -> StringMap.add fd.fname fd m)
+			built_in_decls functions
+	in
+	let function_decl s = try StringMap.find s function_decls
+		with Not_found -> raise (Failure ("unrecognized function " ^ s))
+	in
+
+
 (**	Check function declarations
  *----------------------------------------------------------------------------*)
 	let check_function func =
