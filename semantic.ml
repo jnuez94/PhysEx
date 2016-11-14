@@ -65,9 +65,41 @@ let checker (globals, functions) =
 		report_duplicate (fun n ->
 			"duplicate local " ^ n ^ " in " ^ func.fname)(List.map snd func.locals);
 
-(**	Return the type of an expression or throw an error
+
+
+
+
+
+
+
+(**	Variable symbol table
  *----------------------------------------------------------------------------*)
+	let symbols = List.fold_left (fun m (t, n) -> StringMap.add n t m)
+		StringMap.empty (globals @ func.formals @ func.locals)
+	in
+
+	let type_of_identifier s =
+		try StringMap.find s symbols
+		with Not_found ->
+			raise (Failure ("undeclared identifier " ^ s))
+	in
+
+	let rec expr = function
+			NumLit _ -> Int
+		| BoolLit _ -> Bool
+	in
 
 
 
+	let rec stmt = function
+			Expr e -> ignore (expr e)
+		| Block sl -> let rec check_block = function
+				[Return _ as s] -> stmt s
+			| Return _ :: _ -> raise (Failure "nothing may follow a return")
+			| Block sl :: ss -> check_block (sl @ ss)
+			| s :: ss -> stmt s ; check_block ss
+			| [] -> ()
+		in check_block sl
+
+	in stmt (Block func.body)
 in List.iter check_function functions
