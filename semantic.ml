@@ -85,8 +85,9 @@ let checker (globals, functions) =
 	in
 
 	let rec expr = function
-			NumLit _ -> Int
+			NumLit _ 	-> Int
 		| BoolLit _ -> Bool
+		| Id s			-> type_of_identifier s
 	in
 
 

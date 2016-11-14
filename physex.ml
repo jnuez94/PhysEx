@@ -3,4 +3,4 @@ let _ =
 		let ast = Parser.program Scanner.token lexbuf in
 			Semantic.checker ast;
 
-	print_string (Llvm.string_of_llmodule (Codegen.translate ast))
+	(* print_string (Llvm.string_of_llmodule (Codegen.translate ast)) *)
