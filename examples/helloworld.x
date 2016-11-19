@@ -1,1 +1,3 @@
-print "Hello world";
+function womp () {
+  int i;
+}

@@ -21,6 +21,7 @@ type typ =
 	| Bool
 	| Blob
 	| Null
+	| Void
 	| Float
 	| String
 
