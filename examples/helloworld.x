@@ -1,3 +1,3 @@
-function hello () {
-	print "womp";
+function womp () {
+  int i;
 }

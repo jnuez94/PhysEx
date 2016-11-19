@@ -9,10 +9,6 @@ rule token = parse
 	| ';'												{ SEMICOLON }
 	| ','												{ COMMA }
 
-	| ['0'-'9']+ as lit																												{ NUM_LITERAL(int_of_string lit) }
-	| ['0'-'9']+ '.' ['0'-'9'] as lit																					{ FLOAT_LITERAL(float_of_string lit) }
-	| ['$' '_' 'a'-'z' 'A'-'Z'] ['$' '_' '-' 'a'-'z' 'A'-'Z' '0'-'9']* as lit { ID(lit) }
-
 	| "null"	{ NULL }
 	| "true"	{ TRUE }
 	| "false"	{ FALSE }
@@ -51,6 +47,10 @@ rule token = parse
 	| "return"		{ RETURN }
 	| "function"	{ FUNCTION }
 	| "stimulus"	{ STIMULUS }
+
+	| ['0'-'9']+ as lit																												{ NUM_LITERAL(int_of_string lit) }
+	| ['0'-'9']+ '.' ['0'-'9'] as lit																					{ FLOAT_LITERAL(float_of_string lit) }
+	| ['$' '_' 'a'-'z' 'A'-'Z'] ['$' '_' '-' 'a'-'z' 'A'-'Z' '0'-'9']* as lit { ID(lit) }
 
 and comment = parse
 		['\r' '\n']		{ token lexbuf }
