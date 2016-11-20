@@ -25,8 +25,8 @@ let translate (globals, functions) =
     List.fold_left global_var StringMap.empty globals
   in
 
-  let print_t = L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
-  let print_func = L.declare_function "print" print_t the_module in
+  let printf_t = L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
+  let printf_func = L.declare_function "printf" printf_t the_module in
 
   let function_decls =
     let function_decl m fdecl =
@@ -63,7 +63,9 @@ let translate (globals, functions) =
       let rec expr builder = function
           A.NumLit i -> L.const_int i32_t i
         | A.BoolLit b -> L.const_int i1_t (if b then 1 else 0)
-
+        | A.Call ("print", [e]) | A.Call ("printb", [e]) ->
+            L.build_call printf_func [| int_format_str; (expr builder e) |]
+            "printf" builder
       in
 
       let add_terminal builder f =
