@@ -20,7 +20,7 @@ type typ =
 		Int
 	| Bool
 	| Blob
-	| Null
+	| Null (* Need to fix this later: NULL not a type i think. *)
 	| Void
 	| Float
 	| String
@@ -55,3 +55,20 @@ type func_decl = {
 }
 
 type program = bind list * func_decl list
+
+let string_of_type = function
+		Int -> "int"
+	| Bool -> "bool"
+	| Void -> "void"
+	| Blob -> "blob"
+	| Float -> "float"
+	| String -> "string"
+
+let rec string_of_expr = function
+		NumLit(l) -> string_of_int l
+	| BoolLit(true) -> "true"
+	| BoolLit(false) -> "false"
+	| Id(s) -> s
+	| Call(f, el) -> 
+			f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
+	| Noexpr -> ""

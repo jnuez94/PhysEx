@@ -1,3 +1,6 @@
+build:
+	ocamlbuild -use-ocamlfind -pkgs llvm,llvm.analysis -cflags -w,+a-4 physex.native
+
 ocaml:
 	ocamllex scanner.mll
 	ocamlyacc -v parser.mly
@@ -13,7 +16,4 @@ clean:
 	ocamlbuild -clean
 	rm -rf scanner.ml parser.ml parser.mli
 	rm -rf *.cmx *.cmi *.cmo *.cmx *.o
-	rm -rf physex *.pd
-
-build:
-	ocamlbuild -use-ocamlfind -pkgs llvm,llvm.analysis -cflags -w,+a-4 physex.native
+	rm -rf physex *.pdi

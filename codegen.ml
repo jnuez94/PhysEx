@@ -63,7 +63,7 @@ let translate (globals, functions) =
       let rec expr builder = function
           A.NumLit i -> L.const_int i32_t i
         | A.BoolLit b -> L.const_int i1_t (if b then 1 else 0)
-        | A.Call ("print", [e]) | A.Call ("printb", [e]) ->
+        | A.Call ("print", [e]) ->
             L.build_call printf_func [| int_format_str; (expr builder e) |]
             "printf" builder
       in

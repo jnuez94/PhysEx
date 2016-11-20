@@ -126,9 +126,19 @@ expr:
 	| expr MINUS expr			{Binop($1, Sub, $3)}
 	| expr TIMES expr			{Binop($1, Mult, $3)}
 	| expr DIVIDE expr		{Binop($1, Div, $3)}
+	/* Function Call */
+	| ID L_PAREN actuals_opt R_PAREN { Call($1, $3) }
 
 	/* Arrays */
 	| L_BRACKET arr R_BRACKET 	{$2}
 
 	/* Blob definion */
 	| L_BRACE kv_pairs R_BRACE	{MapLit($2)}
+
+actuals_opt:
+		/* nothing */	{ [] }
+	| actuals_list	{ List.rev $1 }
+
+actuals_list:
+		expr 	{ [$1] }
+	| actuals_list COMMA expr { $3 :: $1 }
