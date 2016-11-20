@@ -32,6 +32,7 @@ type expr =
 	| BoolLit of bool
 	| FloatLit of float
 	| Id of string
+	| StringLit of string
 	| Noexpr
 	| Binop of expr * op * expr
 	| Unop of uop * expr
@@ -68,6 +69,7 @@ let rec string_of_expr = function
 		NumLit(l) -> string_of_int l
 	| BoolLit(true) -> "true"
 	| BoolLit(false) -> "false"
+	| StringLit(s) -> s
 	| Id(s) -> s
 	| Call(f, el) -> 
 			f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"

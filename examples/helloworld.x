@@ -1,4 +1,4 @@
 function womp () {
   int i;
-	print(32);
+	print("hello world");
 }

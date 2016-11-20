@@ -15,6 +15,7 @@
 
 %token <int> NUM_LITERAL
 %token <float> FLOAT_LITERAL
+%token <string> STRING
 %token <string> ID
 
 /* Associativity definitions */
@@ -106,6 +107,7 @@ expr:
 	| ID									{Id($1)}
 	| NUM_LITERAL					{NumLit($1)}
 	| FLOAT_LITERAL				{FloatLit($1)}
+	| STRING 							{StringLit($1)}
 
 	/* Logical Operators */
 	| NOT expr						{Unop(Not, $2)}
