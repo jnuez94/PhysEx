@@ -1,4 +1,13 @@
-{ open Parser }
+{ open Parser
+		let unescape s =
+			Scanf.sscanf ("\"" ^ s ^ "\"") "%S%!" (fun x -> x) 
+}
+
+let escape = '\\' ['\\' ''' '"' 'n' 'r' 't']
+let escape_char = ''' (escape) '''
+let ascii = ([' '-'!' '#'-'[' ']'-'~'])
+let string = '"' ((ascii | escape)* as s) '"'
+
 
 rule token = parse
 		[' ' '\t' '\r' '\n']	{ token lexbuf }
@@ -51,7 +60,7 @@ rule token = parse
 	| ['0'-'9']+ as lit																												{ NUM_LITERAL(int_of_string lit) }
 	| ['0'-'9']+ '.' ['0'-'9'] as lit																					{ FLOAT_LITERAL(float_of_string lit) }
 	| ['$' '_' 'a'-'z' 'A'-'Z'] ['$' '_' '-' 'a'-'z' 'A'-'Z' '0'-'9']* as lit { ID(lit) }
-	| ['\"'][^'\"']*['\"'] as lit 																						{ STRING(lit) }
+	| string 																						{ STRING(unescape s) }
 
 and comment = parse
 		['\r' '\n']		{ token lexbuf }

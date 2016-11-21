@@ -41,7 +41,7 @@ let translate (globals, functions) =
         let (the_function, _) = StringMap.find fdecl.A.fname function_decls in
         let builder = L.builder_at_end context (L.entry_block the_function) in
 
-        let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder in
+        let str_format = L.build_global_stringptr "%s\n" "fmt" builder in
 
         let local_vars =
           let add_formal m (t, n) p = L.set_value_name n p;
@@ -68,7 +68,7 @@ let translate (globals, functions) =
         		let zero = L.const_int i32_t 0 in
         		let s = L.build_in_bounds_gep arr [| zero |] "" builder in s
         | A.Call ("print", [e]) ->
-            L.build_call printf_func [| int_format_str; (expr builder e) |]
+            L.build_call printf_func [| str_format; (expr builder e) |]
             "printf" builder
         | A.Call (f, act) ->
             let (fdef, fdecl) = StringMap.find f function_decls in 
