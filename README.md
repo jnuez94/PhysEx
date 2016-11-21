@@ -2,6 +2,12 @@
 Programming Language to ease creating of physics engines and fast prototyping.
 
 
+Compile into executable:
+(./physex.native <  examples/helloworld.x ) > test.ll
+lli test.ll
+
+
+
 
 ------------------ Importing the Image in Virtualbox ---------------------------
 1. Download the Ubuntu image from    http://www.cs.columbia.edu/~sedwards/classes/2016/4115-fall/PLT4115.7z
