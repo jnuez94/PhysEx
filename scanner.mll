@@ -1,6 +1,6 @@
 { open Parser
 		let unescape s =
-			Scanf.sscanf ("\"" ^ s ^ "\"") "%S%!" (fun x -> x) 
+			Scanf.sscanf ("\"" ^ s ^ "\"") "%S%!" (fun x -> x)
 }
 
 let escape = '\\' ['\\' ''' '"' 'n' 'r' 't']
@@ -64,3 +64,4 @@ rule token = parse
 
 and comment = parse
 		['\r' '\n']		{ token lexbuf }
+	| _ 						{ comment lexbuf }
