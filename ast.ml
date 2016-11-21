@@ -23,7 +23,7 @@ type typ =
 	| Null (* Need to fix this later: NULL not a type i think. *)
 	| Void
 	| Float
-	| String
+	| Str
 
 type bind = typ * string
 
@@ -63,7 +63,7 @@ let string_of_type = function
 	| Void -> "void"
 	| Blob -> "blob"
 	| Float -> "float"
-	| String -> "string"
+	| Str -> "string"
 
 let rec string_of_expr = function
 		NumLit(l) -> string_of_int l

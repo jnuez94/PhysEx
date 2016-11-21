@@ -15,7 +15,7 @@ let translate (globals, functions) =
       A.Int -> i32_t
     | A.Bool -> i1_t
     | A.Void -> void_t
-    | A.String -> str_t
+    | A.Str -> str_t
   in
 
   let global_vars =
@@ -70,6 +70,11 @@ let translate (globals, functions) =
         | A.Call ("print", [e]) ->
             L.build_call printf_func [| int_format_str; (expr builder e) |]
             "printf" builder
+        | A.Call (f, act) ->
+            let (fdef, fdecl) = StringMap.find f function_decls in 
+              let actuals = List.rev (List.map (expr builder) (List.rev act)) in
+              let result = "" in
+              L.build_call fdef (Array.of_list actuals) result builder
       in
 
       let add_terminal builder f =

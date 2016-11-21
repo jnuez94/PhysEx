@@ -94,7 +94,7 @@ arr:
 typ:
 	 	INT                 {Int}
 	| FLT                 {Float}
-	| STR                 {String}
+	| STR                 {Str}
 	| BOOL                {Bool}
 	| BLOB								{Blob}
 	| NULL								{Null}

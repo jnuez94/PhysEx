@@ -1,4 +1,3 @@
-function main () {
-  int i;
+function main() {
 	print("hello world");
 }

@@ -45,7 +45,7 @@ let checker (globals, functions) =
  *----------------------------------------------------------------------------*)
 	let built_in_decls = StringMap.singleton "print" {
 		fname = "print";
-		formals = [(String, "x")];
+		formals = [(Str, "x")];
 		locals = [];
 		body = []
 	}
@@ -96,7 +96,7 @@ let checker (globals, functions) =
 	let rec expr = function
 			NumLit _ 	-> Int
 		| BoolLit _ -> Bool
-		| StringLit _ -> String
+		| StringLit _ -> Str
 		| Id s			-> type_of_identifier s
 		| Noexpr -> Void
 		| Call(fname,actuals) as call -> let fd = function_decl fname in
