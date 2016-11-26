@@ -19,6 +19,9 @@ _build/
 setup.data
 setup.log
 
+# llvm generated files
+*.ll
+
 parser.output
 scanner.ml
 parser.mli
