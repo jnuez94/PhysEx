@@ -57,7 +57,7 @@ type func_decl = {
 
 type program = bind list * func_decl list
 
-let string_of_type = function
+let string_of_typ = function
 		Int -> "int"
 	| Bool -> "bool"
 	| Void -> "void"
@@ -71,6 +71,7 @@ let rec string_of_expr = function
 	| BoolLit(false) -> "false"
 	| StringLit(s) -> s
 	| Id(s) -> s
-	| Call(f, el) -> 
+	| Call(f, el) ->
 			f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
 	| Noexpr -> ""
+	| Assign(v, e) -> v ^ " = " ^ string_of_expr e

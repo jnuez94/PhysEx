@@ -34,7 +34,7 @@ let checker (globals, functions) =
 	(* Checking Global Variables *)
 	List.iter (check_not_void (fun n -> "illegal void global " ^ n)) globals;
 	report_duplicate (fun n -> "duplicate global " ^ n) (List.map snd globals);
-	
+
 	(* Defend built-in functions *)
 	if List.mem "print" (List.map (fun fd -> fd.fname) functions)
 	then raise (Failure ("function print may not be defined")) else ();
@@ -101,15 +101,19 @@ let checker (globals, functions) =
 		| Noexpr -> Void
 		| Call(fname,actuals) as call -> let fd = function_decl fname in
 				if List.length actuals != List.length fd.formals then
-					raise (Failure ("expecting " ^ string_of_int (List.length fd.formals) 
+					raise (Failure ("expecting " ^ string_of_int (List.length fd.formals)
 					^ " arguments")) (* string_of_expr call *)
 				else
 					List.iter2 (fun (ft, _) e -> let et = expr e in
 						ignore (check_assign ft et
-							(Failure ("illegal actual agrument: found " ^ string_of_type et ^
-							", expected " ^ string_of_type ft ^ " in " ^ string_of_expr e))))
+							(Failure ("illegal actual agrument: found " ^ string_of_typ et ^
+							", expected " ^ string_of_typ ft ^ " in " ^ string_of_expr e))))
 					 fd.formals actuals;
 					Void (* FIX: This is for testing purposes *)
+		| Assign(var, e) as ex -> let lt = type_of_identifier var and rt = expr e in
+															check_assign lt rt (Failure ("illegal assignment " ^ string_of_typ lt ^
+															     " = " ^ string_of_typ rt ^ " in " ^
+															     string_of_expr ex))
 	in
 
 	let check_bool_expr e = if expr e != Bool

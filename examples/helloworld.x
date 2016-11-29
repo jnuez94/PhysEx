@@ -1,4 +1,6 @@
 // Hello world example program
+string out;
 function main () {
-	print("hello world\n");
+	out ="max";
+	print(out);
 }

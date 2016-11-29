@@ -20,7 +20,7 @@ let translate (globals, functions) =
 
   let global_vars =
     let global_var m (t, n) =
-      let init = L.const_int (ltype_of_typ t) 0
+      let init = L.const_null (ltype_of_typ t)
       in StringMap.add n (L.define_global n init the_module) m in
     List.fold_left global_var StringMap.empty globals
   in
@@ -63,7 +63,8 @@ let translate (globals, functions) =
       let rec expr builder = function
           A.NumLit i -> L.const_int i32_t i
         | A.BoolLit b -> L.const_int i1_t (if b then 1 else 0)
-        | A.StringLit b -> 
+        | A.Id s-> L.build_load (lookup s) s builder
+        | A.StringLit b ->
         		let arr = L.build_global_stringptr b "" builder in
         		let zero = L.const_int i32_t 0 in
         		let s = L.build_in_bounds_gep arr [| zero |] "" builder in s
@@ -71,10 +72,12 @@ let translate (globals, functions) =
             L.build_call printf_func [| str_format; (expr builder e) |]
             "printf" builder
         | A.Call (f, act) ->
-            let (fdef, fdecl) = StringMap.find f function_decls in 
+            let (fdef, fdecl) = StringMap.find f function_decls in
               let actuals = List.rev (List.map (expr builder) (List.rev act)) in
               let result = "" in
               L.build_call fdef (Array.of_list actuals) result builder
+        | A.Assign (s, e) -> let e' = expr builder e in
+  	          ignore (L.build_store e' (lookup s) builder); e'
       in
 
       let add_terminal builder f =
