@@ -42,6 +42,7 @@ let translate (globals, functions) =
         let builder = L.builder_at_end context (L.entry_block the_function) in
 
         let str_format = L.build_global_stringptr "%s\n" "fmt" builder in
+        let int_format_str = L.build_global_stringptr "%d\n" "fmt" builder in
 
         let local_vars =
           let add_formal m (t, n) p = L.set_value_name n p;
@@ -64,12 +65,37 @@ let translate (globals, functions) =
           A.NumLit i -> L.const_int i32_t i
         | A.BoolLit b -> L.const_int i1_t (if b then 1 else 0)
         | A.Id s-> L.build_load (lookup s) s builder
+        | A.Binop(e1, op ,e2) ->
+            let e1' = expr builder e1
+            and e2' = expr builder e2 in
+            (match op with
+              A.Add     -> L.build_add
+            | A.Sub     -> L.build_sub
+            | A.Mult    -> L.build_mul
+            | A.Div     -> L.build_sdiv
+            | A.And     -> L.build_and
+            | A.Or      -> L.build_or
+            | A.Equal   -> L.build_icmp L.Icmp.Eq
+            | A.Neq     -> L.build_icmp L.Icmp.Ne
+            | A.Less    -> L.build_icmp L.Icmp.Slt
+            | A.Leq     -> L.build_icmp L.Icmp.Sle
+            | A.Greater -> L.build_icmp L.Icmp.Sgt
+            | A.Geq     -> L.build_icmp L.Icmp.Sge
+            ) e1' e2' "tmp" builder
+        | A.Unop(op, e) ->
+            let e' = expr builder e in
+            (match op with
+              A.Neg     -> L.build_neg
+            | A.Not     -> L.build_not) e' "tmp" builder
         | A.StringLit b ->
         		let arr = L.build_global_stringptr b "" builder in
         		let zero = L.const_int i32_t 0 in
         		let s = L.build_in_bounds_gep arr [| zero |] "" builder in s
         | A.Call ("print", [e]) ->
             L.build_call printf_func [| str_format; (expr builder e) |]
+            "printf" builder
+        | A.Call ("printi", [e]) ->
+            L.build_call printf_func [| int_format_str; (expr builder e) |]
             "printf" builder
         | A.Call (f, act) ->
             let (fdef, fdecl) = StringMap.find f function_decls in

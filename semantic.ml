@@ -43,12 +43,13 @@ let checker (globals, functions) =
 
 (**	Declare built-in functions
  *----------------------------------------------------------------------------*)
-	let built_in_decls = StringMap.singleton "print" {
-		fname = "print";
-		formals = [(Str, "x")];
-		locals = [];
-		body = []
-	}
+	let built_in_decls = StringMap.add "print" {
+		fname = "print"; formals = [(Str, "x")];
+		locals = []; body = [] } (StringMap.singleton "printi" {
+		fname = "printi"; formals = [(Int, "x")];
+		locals = []; body = []
+	})
+	(* Create print function for int *)
 	in
 	let function_decls =
  		List.fold_left (fun m fd -> StringMap.add fd.fname fd m)
@@ -63,23 +64,16 @@ let checker (globals, functions) =
  *----------------------------------------------------------------------------*)
 	let check_function func =
 		List.iter (check_not_void (fun n ->
-			"illegal void formal " ^ n ^ "in " ^ func.fname)) func.formals;
+			"illegal void formal " ^ n ^ " in " ^ func.fname)) func.formals;
 
 		report_duplicate (fun n ->
 			"duplicate formal " ^ n ^ " in " ^ func.fname)(List.map snd func.formals);
 
 		List.iter (check_not_void (fun n ->
-			"illegal void local " ^ n ^ "in " ^ func.fname)) func.locals;
+			"illegal void local " ^ n ^ " in " ^ func.fname)) func.locals;
 
 		report_duplicate (fun n ->
 			"duplicate local " ^ n ^ " in " ^ func.fname)(List.map snd func.locals);
-
-
-
-
-
-
-
 
 (**	Variable symbol table
  *----------------------------------------------------------------------------*)
@@ -99,10 +93,25 @@ let checker (globals, functions) =
 		| StringLit _ -> Str
 		| Id s			-> type_of_identifier s
 		| Noexpr -> Void
+		| Binop(e1, op, e2) as e -> let t1 = expr e1 and t2 = expr e2 in
+				(match op with
+					Add | Sub | Mult | Div when t1 = Int && t2 = Int -> Int
+				| Equal | Neq when t1 = t2 -> Bool
+				| Less | Leq | Greater | Geq when t1 = Int && t2 = Int -> Bool
+				| And | Or when t1 = Bool && t2 = Bool -> Bool
+				| _ -> raise (Failure ("illegal binary operator " ^
+						string_of_typ t1 ^ " " ^ string_of_op op ^ " " ^
+						string_of_typ t2 ^ " in " ^ string_of_expr e)))
+		| Unop(op, e) as ex -> let t = expr e in
+				(match op with
+					Neg when t = Int -> Int
+				| Not when t = Bool -> Bool
+				| _ -> raise (Failure ("illegal unary operator " ^ string_of_uop op ^
+					string_of_typ t ^ " in " ^ string_of_expr ex)))
 		| Call(fname,actuals) as call -> let fd = function_decl fname in
 				if List.length actuals != List.length fd.formals then
 					raise (Failure ("expecting " ^ string_of_int (List.length fd.formals)
-					^ " arguments")) (* string_of_expr call *)
+					^ " arguments in " ^ string_of_expr call)) (* string_of_expr call *)
 				else
 					List.iter2 (fun (ft, _) e -> let et = expr e in
 						ignore (check_assign ft et

@@ -1,7 +1,7 @@
 EXE = physex.native
 
 build:
-	ocamlbuild -use-ocamlfind -pkgs llvm,llvm.analysis -cflags -w,+a-4 $(EXE)
+	ocamlbuild -use-ocamlfind -pkgs llvm,llvm.analysis -cflags -w,+a-4 $(EXE) > physex.log
 
 ocaml:
 	ocamllex scanner.mll
@@ -18,4 +18,4 @@ clean:
 	ocamlbuild -clean
 	rm -rf scanner.ml parser.ml parser.mli
 	rm -rf *.cmx *.cmi *.cmo *.cmx *.o
-	rm -rf physex *.pdi
+	rm -rf physex *.pdi test
