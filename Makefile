@@ -18,4 +18,4 @@ clean:
 	ocamlbuild -clean
 	rm -rf scanner.ml parser.ml parser.mli
 	rm -rf *.cmx *.cmi *.cmo *.cmx *.o
-	rm -rf physex *.pdi test
+	rm -rf physex *.pdi *.out *.ll *.diff

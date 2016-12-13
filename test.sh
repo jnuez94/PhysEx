@@ -40,7 +40,16 @@ Compare() {
 # Report the command, run it, and report any errors
 Run() {
     echo $* 1>&2
-    eval $*
+    {
+        if [ -n `eval $*`] ; then
+            return 0
+        else
+            return 1
+        fi
+    } || {
+    SignalError "$1 failed on $*"
+    return 1
+    }
 }
 
 Check() {
