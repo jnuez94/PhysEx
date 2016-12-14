@@ -19,13 +19,15 @@
 %token <string> ID
 
 /* Associativity definitions */
+%nonassoc NOELSE
+%nonassoc ELSE
 %right ASN
 %left OR AND
 %left EQ NEQ
 %left LT LEQ GT GEQ
 %left PLUS MINUS
 %left TIMES DIVIDE
-%right NOT
+%right NOT NEG
 
 %start program
 %type <Ast.program> program
@@ -73,7 +75,7 @@ stmt:
 	| RETURN expr SEMICOLON	{Return $2}
 
 	/* Conditional */
-	| IF L_PAREN expr R_PAREN L_BRACE stmt R_BRACE	{If ($3, $6, Block([]))}
+	| IF L_PAREN expr R_PAREN L_BRACE stmt R_BRACE %prec NOELSE {If ($3, $6, Block([]))}
 	|	IF L_PAREN expr R_PAREN L_BRACE stmt R_BRACE ELSE L_BRACE stmt R_BRACE	{If ($3, $6, $10)}
 	/*| IF L_PAREN expr R_PAREN L_BRACE stmt R_BRACE ELIF L_PAREN stmt R_PAREN L_BRACE stmt R_BRACE {0}*/
 
@@ -110,6 +112,7 @@ expr:
 	| STRING 							{StringLit($1)}
 
 	/* Logical Operators */
+	| MINUS expr %prec NEG { Unop(Neg, $2)}
 	| NOT expr						{Unop(Not, $2)}
 	| expr AND expr				{Binop($1, And, $3)}
 	| expr OR	expr				{Binop($1, Or, $3)}

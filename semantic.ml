@@ -138,6 +138,11 @@ let checker (globals, functions) =
 			| s :: ss -> stmt s ; check_block ss
 			| [] -> ()
 		in check_block sl
-
-	in stmt (Block func.body)
+		| If(p, b1, b2) -> check_bool_expr p; stmt b1; stmt b2
+		| For(e1, e2, e3, st) -> ignore (expr e1); check_bool_expr e2;
+				ignore (expr e3); stmt st
+		| While(p, s) -> check_bool_expr p; stmt s
+	in 
+	
+	stmt (Block func.body)
 in List.iter check_function functions
