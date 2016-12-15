@@ -39,6 +39,13 @@ rule token = parse
 	| '!'		{ NOT }
 	| "&&"	{ AND }
 
+	| "==" 	{ EQ }
+	| "!=" 	{ NEQ }
+	| "<"		{ LT }
+	| "<="	{ LEQ }
+	| ">"		{ GT }
+	| ">="	{ GEQ }
+
 	| "int"			{ INT }
 	| "string"	{ STR }
 	| "float"		{ FLT }
