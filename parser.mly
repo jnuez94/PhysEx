@@ -75,13 +75,13 @@ stmt:
 	| RETURN expr SEMICOLON	{Return $2}
 
 	/* Conditional */
-	| IF L_PAREN expr R_PAREN L_BRACE stmt R_BRACE %prec NOELSE {If ($3, $6, Block([]))}
-	|	IF L_PAREN expr R_PAREN L_BRACE stmt R_BRACE ELSE L_BRACE stmt R_BRACE	{If ($3, $6, $10)}
+	| IF L_PAREN expr R_PAREN L_BRACE stmt_list R_BRACE %prec NOELSE {If ($3, CFBlock($6), CFBlock([]))}
+	|	IF L_PAREN expr R_PAREN L_BRACE stmt_list R_BRACE ELSE L_BRACE stmt_list R_BRACE	{If ($3, CFBlock($6), CFBlock($10))}
 	/*| IF L_PAREN expr R_PAREN L_BRACE stmt R_BRACE ELIF L_PAREN stmt R_PAREN L_BRACE stmt R_BRACE {0}*/
 
 	/* Loops */
-	| WHILE L_PAREN expr R_PAREN L_BRACE stmt R_BRACE {While($3, $6)}
-	| FOR L_PAREN expr SEMICOLON expr SEMICOLON expr R_PAREN L_BRACE stmt R_BRACE {For ($3, $5, $7, $10)}
+	| WHILE L_PAREN expr R_PAREN L_BRACE stmt_list R_BRACE {While($3, CFBlock($6))}
+	| FOR L_PAREN expr SEMICOLON expr SEMICOLON expr R_PAREN L_BRACE stmt_list R_BRACE {For ($3, $5, $7, CFBlock($10))}
 
 
 kv_pairs:

@@ -115,6 +115,7 @@ let translate (globals, functions) =
 
       let rec stmt builder = function
           A.Block sl -> List.fold_left stmt builder sl
+        | A.CFBlock sl -> let stl = List.rev sl in List.fold_left stmt builder stl
         | A.Expr e -> ignore (expr builder e); builder
         | A.If (predicate, then_stmt, else_stmt) ->
             let bool_val = expr builder predicate in

@@ -138,6 +138,17 @@ let checker (globals, functions) =
 			| s :: ss -> stmt s ; check_block ss
 			| [] -> ()
 		in check_block sl
+		| CFBlock sl -> let stl = List.rev sl in
+			let rec check_lblock = function
+				[Return _ as s] -> stmt s
+			| Return _ :: _ -> raise (Failure "nothing may follow a return")
+			| Block stl :: ss -> check_lblock (stl @ ss)
+			| s :: ss -> stmt s ; check_lblock ss
+			| [] -> () in check_lblock stl
+		| Return e -> let t = expr e in 
+				(match t with 
+					 Int | Bool | Void | Str -> ()
+					| _ -> raise (Failure ("unknown return type " ^ string_of_typ t ^ " in " ^ string_of_expr e)))
 		| If(p, b1, b2) -> check_bool_expr p; stmt b1; stmt b2
 		| For(e1, e2, e3, st) -> ignore (expr e1); check_bool_expr e2;
 				ignore (expr e3); stmt st
