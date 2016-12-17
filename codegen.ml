@@ -145,6 +145,7 @@ let translate (globals, functions) =
 
       let rec stmt builder = function
           A.Block sl -> List.fold_left stmt builder sl
+        | A.CFBlock sl -> let stl = List.rev sl in List.fold_left stmt builder stl
         | A.Expr e -> ignore (expr builder e); builder
         | A.If (predicate, then_stmt, else_stmt) ->
             let bool_val = expr builder predicate in
@@ -173,8 +174,7 @@ let translate (globals, functions) =
             ignore (L.build_cond_br bool_val body_bb merge_bb pred_builder);
             L.builder_at_end context merge_bb
         | A.For (e1, e2, e3, body) -> stmt builder
-            (A.Block [A.Expr e1; A.While (e2, A.Block [body ; A.Expr e3])])
-
+            (A.CFBlock [A.Expr e1; A.While (e2, A.CFBlock [body ; A.Expr e3])])
       in
 
       let builder = stmt builder (A.Block fdecl.A.body) in

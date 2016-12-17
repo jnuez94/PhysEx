@@ -1,7 +1,10 @@
 int i;
+int j;
 function main() {
+	j = 0;
 	for(i = 0; i < 5; i=i+1){
-		printi(i);
+		printi(j);
+		j = i;
 	}
 	printi(10);
 }
