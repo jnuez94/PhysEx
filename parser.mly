@@ -90,9 +90,6 @@ kv_pairs:
 kv_pair:
 	| expr COLON expr			{$1, $3}
 
-arr:
-	| expr COMMA					{$1}
-
 typ:
 	 	INT                 {Int}
 	| FLT                 {Float}
@@ -101,6 +98,7 @@ typ:
 	| BLOB								{Blob}
 	| NULL								{Null}
 	|	VOID								{Void}
+	| INT TIMES						{Int_p}
 
 expr:
 		/* Literals */
@@ -131,11 +129,14 @@ expr:
 	| expr MINUS expr			{Binop($1, Sub, $3)}
 	| expr TIMES expr			{Binop($1, Mult, $3)}
 	| expr DIVIDE expr		{Binop($1, Div, $3)}
-	/* Function Call */
-	| ID L_PAREN actuals_opt R_PAREN { Call($1, $3) }
 
 	/* Arrays */
-	| L_BRACKET arr R_BRACKET 	{$2}
+	| ID ASN L_BRACKET expr R_BRACKET					{ArrayInit($1, $4)}
+	| ID L_BRACKET expr R_BRACKET ASN expr		{ArrayAsn($1, $3, $6)}
+	| ID L_BRACKET expr R_BRACKET							{ArrayRead($1, $3)}
+
+	/* Function Call */
+	| ID L_PAREN actuals_opt R_PAREN { Call($1, $3) }
 
 	/* Blob definion */
 	| L_BRACE kv_pairs R_BRACE	{MapLit($2)}
