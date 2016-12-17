@@ -24,6 +24,8 @@ type typ =
 	| Void
 	| Float
 	| Str
+	| Str_p
+	| Int_p
 
 type bind = typ * string
 
@@ -38,6 +40,10 @@ type expr =
 	| Unop of uop * expr
 	| Assign of string * expr
 	| Call of string * expr list
+	| ArrayInit of string * expr
+	| ArrayAsn of string * expr * expr
+	| ArrayRead of string * expr
+	(* | ArrayAsn | ArrayRead *)
 	| MapLit of (expr * expr) list
 
 type stmt =
@@ -81,20 +87,22 @@ let rec string_of_expr = function
 	| BoolLit(false) -> "false"
 	| StringLit(s) -> s
 	| Id(s) -> s
-	| Binop(e1, o, e2) -> 
+	| Binop(e1, o, e2) ->
 			string_of_expr e1 ^ " " ^ string_of_op o ^ " " ^ string_of_expr e2
 	| Unop(o, e) -> string_of_uop o ^ string_of_expr e
 	| Call(f, el) ->
 			f ^ "(" ^ String.concat ", " (List.map string_of_expr el) ^ ")"
 	| Noexpr -> ""
 	| Assign(v, e) -> v ^ " = " ^ string_of_expr e
+	| ArrayAsn (var, i, e) -> var ^ "[" ^ string_of_expr i ^ "] = " ^ string_of_expr e
+	| ArrayRead (var, i) -> var ^ " from index " ^ string_of_expr i
 
 let rec string_of_stmt = function
 		Block(stmts) ->
 			"{\n" ^ String.concat "" (List.map string_of_stmt stmts) ^ "}\n"
 	| Expr(expr) -> string_of_expr expr ^ ";\n";
 	| Return(expr) -> "return " ^ string_of_expr expr ^ ";\n";
-	| If(e, s, Block([])) -> "if (" ^ string_of_expr e ^ ")\n" ^ 
+	| If(e, s, Block([])) -> "if (" ^ string_of_expr e ^ ")\n" ^
 			string_of_stmt s
 	| If(e, s1, s2) -> "if (" ^ string_of_expr e ^ ")\n" ^
 			string_of_stmt s1 ^ "else\n" ^ string_of_stmt s2
@@ -110,6 +118,8 @@ let string_of_typ = function
 	| Blob -> "blob"
 	| Float -> "float"
 	| Str -> "string"
+	| Str_p -> "string pointer"
+	| Int_p -> "int pointer"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 

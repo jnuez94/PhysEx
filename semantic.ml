@@ -119,10 +119,23 @@ let checker (globals, functions) =
 							", expected " ^ string_of_typ ft ^ " in " ^ string_of_expr e))))
 					 fd.formals actuals;
 					Void (* FIX: This is for testing purposes *)
+
 		| Assign(var, e) as ex -> let lt = type_of_identifier var and rt = expr e in
 															check_assign lt rt (Failure ("illegal assignment " ^ string_of_typ lt ^
-															     " = " ^ string_of_typ rt ^ " in " ^
+															     " != " ^ string_of_typ rt ^ " in " ^
 															     string_of_expr ex))
+
+		|	ArrayInit (v, s) -> type_of_identifier v
+
+		| ArrayAsn (v, i, e) as ex -> let fn = function Int_p -> Int in
+				let lt = fn (type_of_identifier v) and rt = expr e in
+														check_assign lt rt (Failure ("illegal assignment " ^ string_of_typ lt ^
+																 " = " ^ string_of_typ rt ^ " in " ^
+																 string_of_expr ex))
+
+		| ArrayRead (v, i) -> let fn = function Int_p -> Int in
+				fn (type_of_identifier v)
+
 	in
 
 	let check_bool_expr e = if expr e != Bool
@@ -142,7 +155,7 @@ let checker (globals, functions) =
 		| For(e1, e2, e3, st) -> ignore (expr e1); check_bool_expr e2;
 				ignore (expr e3); stmt st
 		| While(p, s) -> check_bool_expr p; stmt s
-	in 
-	
+	in
+
 	stmt (Block func.body)
 in List.iter check_function functions
