@@ -1,6 +1,4 @@
-string x;
 function main() {
-	x = "dragon"
 	if (true) {
 		printi(42);
 	}
@@ -8,7 +6,7 @@ function main() {
 		printi(5);
 	} else {
 		if (3 != 6){
-			if (x == "chicken") {
+			if (5 == 5) {
 				printi(17);
 			}
 			else {
