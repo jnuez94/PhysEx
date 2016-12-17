@@ -16,6 +16,8 @@ let translate (globals, functions) =
     | A.Bool -> i1_t
     | A.Void -> void_t
     | A.Str -> str_t
+    | A.Str_p -> L.pointer_type str_t
+    | A.Int_p -> L.pointer_type i32_t
   in
 
   let global_vars =
@@ -26,7 +28,10 @@ let translate (globals, functions) =
   in
 
   let printf_t = L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
+  let calloc_t = L.function_type str_t [|i32_t;i32_t|] in
+
   let printf_func = L.declare_function "printf" printf_t the_module in
+  let calloc_func = L.declare_function "calloc" calloc_t the_module in
 
   let function_decls =
     let function_decl m fdecl =
@@ -61,10 +66,35 @@ let translate (globals, functions) =
               with Not_found -> StringMap.find n global_vars
       in
 
+      (* let init_arr v s = let k = L.build_in_bounds_gep v [|s|] "" builder in
+        L.build_load k "deref" builder
+      in *)
+
+      let init_arr v s = let tp = L.element_type (L.type_of v) in
+        let sz = L.size_of tp in
+        let sz = L.build_intcast sz (i32_t) "" builder in
+        let dt = L.build_bitcast (L.build_call calloc_func [|s;sz|] "" builder) tp "" builder in
+          L.build_store dt v builder
+      in
+
       let rec expr builder = function
           A.NumLit i -> L.const_int i32_t i
         | A.BoolLit b -> L.const_int i1_t (if b then 1 else 0)
         | A.Id s-> L.build_load (lookup s) s builder
+
+        | A.ArrayInit (v, s)-> let var = (lookup v) and size = (expr builder s) in
+          init_arr var size
+
+        | ArrayAsn (v, i, e) -> let var = (expr builder (A.Id v))
+            and index = (expr builder i) and value = (expr builder e) in
+            let k = L.build_in_bounds_gep var [|index|] "" builder in
+            L.build_store value k builder
+
+        | ArrayRead (v, i) -> let var = (expr builder (A.Id v))
+            and index = (expr builder i) in
+            let k = L.build_in_bounds_gep var [|index|] "" builder in
+            L.build_load k "" builder
+
         | A.Noexpr -> L.const_int i32_t 0
         | A.Binop(e1, op ,e2) ->
             let e1' = expr builder e1
