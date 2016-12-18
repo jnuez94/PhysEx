@@ -26,6 +26,7 @@ type typ =
 	| Str
 	| Str_p
 	| Int_p
+	| Stim
 
 type bind = typ * string
 
@@ -43,7 +44,6 @@ type expr =
 	| ArrayInit of string * expr
 	| ArrayAsn of string * expr * expr
 	| ArrayRead of string * expr
-	(* | ArrayAsn | ArrayRead *)
 	| MapLit of (expr * expr) list
 
 type stmt =

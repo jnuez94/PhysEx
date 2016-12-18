@@ -34,9 +34,8 @@ program:
 
 decls:
 	 /* nothing */ { [], [] }
-	| decls fdecl { fst $1, ($2 :: snd $1) }	 
+	| decls fdecl { fst $1, ($2 :: snd $1) }
 	| decls vdecl { ($2 :: fst $1), snd $1 }
-
 
 fdecl:
 	typ FUNC ID L_PAREN formals_opt R_PAREN L_BRACE vdecl_list stmt_list R_BRACE {{
@@ -44,7 +43,7 @@ fdecl:
 		fname = $3;
 		formals = $5;
 		locals = List.rev $8;
-		body = List.rev $9 
+		body = List.rev $9
 	}}
 
 formals_opt:
@@ -103,7 +102,7 @@ expr:
   /* Unary Operators */
   | MINUS expr %prec NEG { Unop(Neg, $2) }
   | NOT expr         { Unop(Not, $2) }
-  
+
   /* Logical Operators */
   | expr AND    expr { Binop($1, And,   $3) }
   | expr OR     expr { Binop($1, Or,    $3) }
@@ -130,7 +129,7 @@ expr:
 
   | ID L_PAREN actuals_opt R_PAREN { Call($1, $3) }
   | L_PAREN expr R_PAREN { $2 }
-  
+
   /* TODO: Redefine Blob */
 
 actuals_opt:

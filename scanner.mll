@@ -60,8 +60,8 @@ rule token = parse
 	| "while"		{ WHILE }
 
 	| "return"		{ RETURN }
-	| "func"	{ FUNC }
-	| "stim"	{ STIM }
+	| "func"			{ FUNC }
+	| "stim"			{ STIM }
 
 	| ['0'-'9']+ as lit																												{ NUM_LITERAL(int_of_string lit) }
 	| ['0'-'9']+ '.' ['0'-'9'] as lit																					{ FLOAT_LITERAL(float_of_string lit) }
