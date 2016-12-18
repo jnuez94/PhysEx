@@ -34,8 +34,9 @@ program:
 
 decls:
 	 /* nothing */ { [], [] }
+	| decls fdecl { fst $1, ($2 :: snd $1) }	 
 	| decls vdecl { ($2 :: fst $1), snd $1 }
-	| decls fdecl { fst $1, ($2 :: snd $1) }
+
 
 fdecl:
 	typ FUNC ID L_PAREN formals_opt R_PAREN L_BRACE vdecl_list stmt_list R_BRACE {{
@@ -84,8 +85,14 @@ stmt:
      { For($3, $5, $7, $9) }
   | WHILE L_PAREN expr R_PAREN stmt { While($3, $5) }
 
-expr:
+kv_pairs:
+	| kv_pair COMMA kv_pairs {$1 :: $3}
 
+kv_pair:
+	| expr COLON expr {$1, $3}
+
+expr:
+	/* Literals */
    	TRUE             { BoolLit(true) }
   | FALSE            { BoolLit(false) }
   | ID               { Id($1) }
@@ -93,11 +100,15 @@ expr:
   | NUM_LITERAL       { NumLit($1) }
   | STRING       { StringLit($1) }
 
+  /* Unary Operators */
   | MINUS expr %prec NEG { Unop(Neg, $2) }
   | NOT expr         { Unop(Not, $2) }
+  
+  /* Logical Operators */
   | expr AND    expr { Binop($1, And,   $3) }
   | expr OR     expr { Binop($1, Or,    $3) }
 
+  /* Comparators */
   | expr EQ     expr { Binop($1, Equal, $3) }
   | expr NEQ    expr { Binop($1, Neq,   $3) }
   | expr LT     expr { Binop($1, Less,  $3) }
@@ -105,18 +116,22 @@ expr:
   | expr GT     expr { Binop($1, Greater, $3) }
   | expr GEQ    expr { Binop($1, Geq,   $3) }
 
+  /* Arithmetic Operators */
   | ID ASN expr   { Assign($1, $3) }
   | expr PLUS   expr { Binop($1, Add,   $3) }
   | expr MINUS  expr { Binop($1, Sub,   $3) }
   | expr TIMES  expr { Binop($1, Mult,  $3) }
   | expr DIVIDE expr { Binop($1, Div,   $3) }
 
+  /* Arrays */
   | ID ASN L_BRACKET expr R_BRACKET		{ ArrayInit($1, $4) }
   | ID L_BRACKET expr R_BRACKET ASN expr { ArrayAsn($1, $3, $6) }
   | ID L_BRACKET expr R_BRACKET					{ ArrayRead($1, $3) }
 
   | ID L_PAREN actuals_opt R_PAREN { Call($1, $3) }
   | L_PAREN expr R_PAREN { $2 }
+  
+  /* TODO: Redefine Blob */
 
 actuals_opt:
     /* nothing */ { [] }
