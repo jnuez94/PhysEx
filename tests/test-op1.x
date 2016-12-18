@@ -1,4 +1,4 @@
-function main() {
+void func main() {
 	printi(1+2+3+4);
 	printi(5-4);
 	printi(3-6);

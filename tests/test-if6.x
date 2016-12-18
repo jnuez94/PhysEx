@@ -1,4 +1,4 @@
-function main() {
+void func main() {
 	if (true) {
 		printi(42);
 	}
@@ -10,7 +10,7 @@ function main() {
 				printi(17);
 			}
 			else {
-				print("passed string equality")
+				print("passed string equality");
 			}
 		}
 	}

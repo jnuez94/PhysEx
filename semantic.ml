@@ -122,7 +122,7 @@ let checker (globals, functions) =
 							(Failure ("illegal actual agrument: found " ^ string_of_typ et ^
 							", expected " ^ string_of_typ ft ^ " in " ^ string_of_expr e))))
 					 fd.formals actuals;
-					Void (* FIX: This is for testing purposes *)
+					fd.typ (* FIX: This is for testing purposes *)
 
 		| Assign(var, e) as ex -> let lt = type_of_identifier var and rt = expr e in
 															check_assign lt rt (Failure ("illegal assignment " ^ string_of_typ lt ^
@@ -155,17 +155,9 @@ let checker (globals, functions) =
 			| s :: ss -> stmt s ; check_block ss
 			| [] -> ()
 		in check_block sl
-		| CFBlock sl -> let stl = List.rev sl in
-			let rec check_lblock = function
-				[Return _ as s] -> stmt s
-			| Return _ :: _ -> raise (Failure "nothing may follow a return")
-			| Block stl :: ss -> check_lblock (stl @ ss)
-			| s :: ss -> stmt s ; check_lblock ss
-			| [] -> () in check_lblock stl
-		| Return e -> let t = expr e in
-				(match t with
-					 Int | Bool | Void | Str -> ()
-					| _ -> raise (Failure ("unknown return type " ^ string_of_typ t ^ " in " ^ string_of_expr e)))
+		| Return e -> let t = expr e in if t = func.typ then () else
+				raise (Failure ("unknown return type " ^ string_of_typ t ^ " expected "
+				^ string_of_typ func.typ ^ " in " ^ string_of_expr e))
 		| If(p, b1, b2) -> check_bool_expr p; stmt b1; stmt b2
 		| For(e1, e2, e3, st) -> ignore (expr e1); check_bool_expr e2;
 				ignore (expr e3); stmt st

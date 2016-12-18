@@ -1,8 +1,10 @@
-function main() {
+void func main() {
 	if (false) {
 		printi(13);
 	} else {
-		printi(42);
+		if (4 < 5){
+			printi(47);
+		}
 	}
 	printi(7);
 }

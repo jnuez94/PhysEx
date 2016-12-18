@@ -3,7 +3,7 @@ string b;
 string c;
 string d;
 
-function main() {
+void func main() {
 	a = "printing a";
 	b = "printing b";
 	c = "printing c";

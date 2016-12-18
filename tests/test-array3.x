@@ -1,6 +1,6 @@
 int i;
 int *arr;
-function main () {
+void func main () {
 	arr = [5];
 	arr[0] = 42;
   arr[1] = 42;

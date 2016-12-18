@@ -5,10 +5,13 @@ int d;
 int e;
 int f;
 
-function main() {
-	a = b = c = d = e = f = 2;
-	d = -5;
-	f = 0;
+void func main() {
+	a = 12;
+	b = 5;
+	c = 6;
+	d = 52;
+	e = 3;
+	f = 2;
 
 	printi(a);
 	printi(b);
