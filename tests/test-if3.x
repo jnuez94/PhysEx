@@ -1,4 +1,4 @@
-function main() {
+void func main() {
 	if (true) {
 		printi(42);
 	}

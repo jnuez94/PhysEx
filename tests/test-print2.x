@@ -1,6 +1,6 @@
 // Demonstrates ability to assign values to variables and output them
 string out;
-function main () {
+void func main () {
 	out ="Hello world, again!";
 	print(out);
 }

@@ -11,7 +11,7 @@
 %token IF ELSE ELIF FOR WHILE
 %token INT STR FLT BOOL BLOB VOID
 %token SEMICOLON COMMA COLON
-%token FUNCTION STIMULUS RETURN
+%token FUNC STIM RETURN
 
 %token <int> NUM_LITERAL
 %token <float> FLOAT_LITERAL
@@ -43,11 +43,12 @@ decls:
   | decls vdecl 	{ ($2 :: fst $1), snd $1}
 
 fdecl:
-  FUNCTION ID L_PAREN formals_opt R_PAREN L_BRACE vdecl_list stmt_list R_BRACE {{
-		fname = $2;
-		formals = $4;
-		locals = List.rev $7;
-		body = List.rev $8;
+  typ FUNC ID L_PAREN formals_opt R_PAREN L_BRACE vdecl_list stmt_list R_BRACE {{
+		typ = $1;
+		fname = $3;
+		formals = $5;
+		locals = List.rev $8;
+		body = List.rev $9;
 	}}
 
 formals_opt:

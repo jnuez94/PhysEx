@@ -5,7 +5,7 @@ int d;
 int e;
 int f;
 
-function main() {
+void func main() {
 	a = 12;
 	b = 5;
 	c = 6;

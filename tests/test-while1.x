@@ -1,5 +1,5 @@
 int i;
-function main() {
+void func main() {
 	i = 0;	
 	while(i < 5) {
 		printi(i);
