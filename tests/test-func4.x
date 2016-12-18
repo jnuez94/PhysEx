@@ -1,15 +1,19 @@
 int func RecTest(int i){
+	int result;
+	result = 0;
 	if (i == 1){
        return 1;
 	}
     else{
-       int result = RecTest(i - 1);
+       result = RecTest(i - 1);
        printi(result);
+       result = result + 1;
     }
-    return 0;
+    return result;
 }
 
 void func main() {
-	int i = 11;
+	int i;
+	i = 11;
 	RecTest(i);
 }
