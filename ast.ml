@@ -48,7 +48,6 @@ type expr =
 
 type stmt =
 		Block of stmt list
-	| CFBlock of stmt list
 	| Expr of expr
 	| If of expr * stmt * stmt
 	| For of expr * expr * expr * stmt
@@ -100,7 +99,7 @@ let rec string_of_expr = function
 	| ArrayRead (var, i) -> var ^ " from index " ^ string_of_expr i
 
 let rec string_of_stmt = function
-		Block(stmts) | CFBlock(stmts) ->
+		Block(stmts) ->
 			"{\n" ^ String.concat "" (List.map string_of_stmt stmts) ^ "}\n"
 	| Expr(expr) -> string_of_expr expr ^ ";\n";
 	| Return(expr) -> "return " ^ string_of_expr expr ^ ";\n";

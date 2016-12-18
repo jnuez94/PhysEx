@@ -146,7 +146,6 @@ let translate (globals, functions) =
 
       let rec stmt builder = function
           A.Block sl -> List.fold_left stmt builder sl
-        | A.CFBlock sl -> let stl = List.rev sl in List.fold_left stmt builder stl
         | A.Expr e -> ignore (expr builder e); builder
         | A.Return e -> ignore (match fdecl.A.typ with
             A.Void -> L.build_ret_void builder 

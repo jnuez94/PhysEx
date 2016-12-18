@@ -27,4 +27,5 @@ void func main() {
 	printi(c/f*b);
 	printi(f*e-c);
 	printi(f*e+a/c);
+	printi(f*c);
 }
