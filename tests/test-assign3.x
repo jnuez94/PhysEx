@@ -5,7 +5,7 @@ int d;
 int e;
 int f;
 
-function main() {
+void func main() {
 	a = b = c = d = e = f = 2;
 	d = -5;
 	f = 0;

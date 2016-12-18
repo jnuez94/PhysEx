@@ -5,7 +5,7 @@ float d;
 float e;
 float f;
 
-function main() {
+void func main() {
 	a = 12.3;
 	b = 5.12;
 	c = 6.4;
