@@ -66,7 +66,7 @@ rule token = parse
 
 	| ['0'-'9']+ as lit																												{ NUM_LITERAL(int_of_string lit) }
 	| ['0'-'9']+ '.' ['0'-'9'] as lit																					{ FLOAT_LITERAL(float_of_string lit) }
-	| ['$' '_' 'a'-'z' 'A'-'Z'] ['$' '_' '-' 'a'-'z' 'A'-'Z' '0'-'9']* as lit { ID(lit) }
+	| ['$' '_' 'a'-'z' 'A'-'Z'] ['$' '_' 'a'-'z' 'A'-'Z' '0'-'9']* as lit { ID(lit) }
 	| string 																						{ STRING(unescape s) }
 
 and comment = parse
