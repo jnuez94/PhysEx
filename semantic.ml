@@ -45,10 +45,14 @@ let checker (globals, functions) =
  *----------------------------------------------------------------------------*)
 	let built_in_decls = StringMap.add "print" {
 		fname = "print"; formals = [(Str, "x")];
-		locals = []; body = [] } (StringMap.singleton "printi" {
+		locals = []; body = [] }
+		(StringMap.add "printi" {
 		fname = "printi"; formals = [(Int, "x")];
+		locals = []; body = [] }
+		(StringMap.singleton "speak" {
+		fname = "speak"; formals = [];
 		locals = []; body = []
-	})
+	}))
 	(* Create print function for int *)
 	in
 	let function_decls =
@@ -158,8 +162,8 @@ let checker (globals, functions) =
 			| Block stl :: ss -> check_lblock (stl @ ss)
 			| s :: ss -> stmt s ; check_lblock ss
 			| [] -> () in check_lblock stl
-		| Return e -> let t = expr e in 
-				(match t with 
+		| Return e -> let t = expr e in
+				(match t with
 					 Int | Bool | Void | Str -> ()
 					| _ -> raise (Failure ("unknown return type " ^ string_of_typ t ^ " in " ^ string_of_expr e)))
 		| If(p, b1, b2) -> check_bool_expr p; stmt b1; stmt b2
