@@ -1,6 +1,6 @@
 int i;
 int *arr;
-void func main () {
+void func simulation () {
 	arr = [5];
 	arr[0] = 42;
   arr[1] = 42;

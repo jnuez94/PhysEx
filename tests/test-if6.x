@@ -1,4 +1,4 @@
-void func main() {
+void func simulation () {
 	if (true) {
 		printi(42);
 	}

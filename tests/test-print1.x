@@ -1,3 +1,3 @@
-void func main () {
+void func simulation () {
 	print("hello world");
 }

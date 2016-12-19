@@ -1,5 +1,5 @@
 int atom;
-void func main () {
+void func simulation () {
 	atom = 3;
 	sleep(3);
 	printi(atom);

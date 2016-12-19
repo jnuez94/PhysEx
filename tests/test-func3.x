@@ -6,6 +6,6 @@ void func test2(){
 	print("Passed test");
 }
 
-void func main() {
+void func simulation () {
 	test();
 }

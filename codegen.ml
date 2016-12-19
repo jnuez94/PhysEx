@@ -53,7 +53,8 @@ let translate (globals, functions) =
 
     let function_decls =
       let function_decl m fdecl =
-        let name = fdecl.A.fname and
+        let name = 
+        	if fdecl.A.fname = "simulation" then "main" else fdecl.A.fname and
             formal_types = Array.of_list (List.map(fun (t,_) -> ltype_of_typ t) fdecl.A.formals)
         in
         let ftype = L.function_type (ltype_of_typ fdecl.A.typ) formal_types in
@@ -61,7 +62,8 @@ let translate (globals, functions) =
           List.fold_left function_decl StringMap.empty functions in
 
         let build_function_body fdecl =
-          let (the_function, _) = StringMap.find fdecl.A.fname function_decls in
+        	let name = if fdecl.A.fname = "simulation" then "main" else fdecl.A.fname in
+          let (the_function, _) = StringMap.find name function_decls in
           let builder = L.builder_at_end context (L.entry_block the_function) in
 
           let str_format = L.build_global_stringptr "%s\n" "fmt" builder in
