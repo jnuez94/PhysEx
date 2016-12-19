@@ -54,6 +54,7 @@ type stmt =
 	| For of expr * expr * expr * stmt
 	| While of expr * stmt
 	| Return of expr
+	| Environment of stmt
 
 type func_decl = {
 	typ 				: typ;

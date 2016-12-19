@@ -5,8 +5,8 @@ open Ast
 %token SEMICOLON L_PAREN R_PAREN L_BRACE R_BRACE L_BRACKET R_BRACKET COMMA
 %token PLUS MINUS TIMES DIVIDE ASN PLSASN SUBASN MULASN DIVASN NOT
 %token EQ NEQ LT LEQ GT GEQ TRUE FALSE AND OR NULL
-%token RETURN IF ELSE FOR WHILE INT BOOL VOID STR FLT BLOB LD
-%token STIM FUNC COLON
+%token RETURN IF ELSE FOR WHILE ST_ENV INT BOOL VOID STR FLT BLOB LD
+%token FUNC COLON
 %token <int> NUM_LITERAL
 %token <float> FLOAT_LITERAL
 %token <string> STRING
@@ -84,6 +84,7 @@ stmt:
   | FOR L_PAREN expr SEMICOLON expr SEMICOLON expr R_PAREN stmt
      { For($3, $5, $7, $9) }
   | WHILE L_PAREN expr R_PAREN stmt { While($3, $5) }
+	| ST_ENV stmt 				{ Environment($2) }
 
 kv_pairs:
 	| kv_pair COMMA kv_pairs {$1 :: $3}
