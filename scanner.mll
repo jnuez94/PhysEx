@@ -62,7 +62,7 @@ rule token = parse
 
 	| "return"		{ RETURN }
 	| "func"			{ FUNC }
-	| "startEnv"	{ ST_ENV }
+	| "start"	{ ST_ENV }
 
 	| ['0'-'9']+ as lit																												{ NUM_LITERAL(int_of_string lit) }
 	| ['0'-'9']+ '.' ['0'-'9'] as lit																					{ FLOAT_LITERAL(float_of_string lit) }

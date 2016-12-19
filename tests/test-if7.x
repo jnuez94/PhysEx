@@ -1,4 +1,4 @@
-void func main() {
+void func simulation () {
 	if (1 == 5) {
 		printi(42);
 	}else if ((5 - 3) == 2){

@@ -5,7 +5,7 @@ int d;
 int e;
 int f;
 
-void func main() {
+void func simulation () {
 	a = b = c = d = e = f = 2;
 	d = -5;
 	f = 0;
