@@ -1,8 +1,7 @@
 EXE = physex.native
 
 build:
-	clang -c -emit-llvm c-library/psleep.c
-	ocamlbuild -use-ocamlfind -pkgs llvm,llvm.analysis,llvm.linker,llvm.bitreader -cflags -w,+a-4 $(EXE) > physex.log
+	ocamlbuild -use-ocamlfind -pkgs llvm,llvm.analysis,llvm.linker,llvm.bitreader -cflags -w,+a-4 $(EXE) > compilation.out
 
 ocaml:
 	ocamllex scanner.mll

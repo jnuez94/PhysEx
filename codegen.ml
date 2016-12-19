@@ -8,6 +8,7 @@ open Llvm_linker
 let translate (globals, functions) =
     let context = L.global_context () in
     let the_module = L.create_module context "PhysEx"
+      and i64_t = L.i64_type context
       and i32_t = L.i32_type context
       and i8_t = L.i8_type context
       and i1_t = L.i1_type context
@@ -19,6 +20,7 @@ let translate (globals, functions) =
       | A.Bool -> i1_t
       | A.Void -> void_t
       | A.Str -> str_t
+      | A.LongDouble -> i64_t
       | A.Str_p -> L.pointer_type str_t
       | A.Int_p -> L.pointer_type i32_t
     in
@@ -42,10 +44,12 @@ let translate (globals, functions) =
     let printf_t = L.var_arg_function_type i32_t [| L.pointer_type i8_t |] in
     let calloc_t = L.function_type str_t [|i32_t;i32_t|] in
     let sleep_t = L.function_type i32_t [| i32_t |] in
+    let clock_t = L.function_type i64_t [||] in
 
     let printf_func = L.declare_function "printf" printf_t the_module in
     let calloc_func = L.declare_function "calloc" calloc_t the_module in
     let sleep_func = L.declare_function "sleep" sleep_t the_module in
+    let clock_func = L.declare_function "clock" clock_t the_module in
 
     let function_decls =
       let function_decl m fdecl =
@@ -144,7 +148,9 @@ let translate (globals, functions) =
           | A.Call ("sleep", [e]) ->
             L.build_call sleep_func [| (expr builder e) |]
             "sleep" builder
-
+          | A.Call ("clock", e) ->
+            L.build_call clock_func [||]
+            "clock" builder
 
 
           | A.Call (f, act) ->

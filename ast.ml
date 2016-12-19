@@ -23,6 +23,7 @@ type typ =
 	| Null (* Need to fix this later: NULL not a type i think. *)
 	| Void
 	| Float
+	| LongDouble
 	| Str
 	| Str_p
 	| Int_p
@@ -121,6 +122,7 @@ let string_of_typ = function
 	| Str -> "string"
 	| Str_p -> "string pointer"
 	| Int_p -> "int pointer"
+	| LongDouble -> "long double"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"
 

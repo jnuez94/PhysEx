@@ -46,12 +46,13 @@ rule token = parse
 	| ">"		{ GT }
 	| ">="	{ GEQ }
 
-	| "int"			{ INT }
-	| "string"	{ STR }
-	| "float"		{ FLT }
-	| "bool"		{ BOOL }
-	| "blob"		{ BLOB }
-	| "void"		{ VOID }
+	| "int"					{ INT }
+	| "string"			{ STR }
+	| "float"				{ FLT }
+	| "longDouble"	{ LD }
+	| "bool"				{ BOOL }
+	| "blob"				{ BLOB }
+	| "void"				{ VOID }
 
 	| "if"			{ IF }
 	| "else"		{ ELSE }

@@ -26,9 +26,21 @@ let checker (globals, functions) =
 			| _ -> ()
 		in
 
+		(* Mask long double as int *)
+		let mask_long_double t =
+			if t == LongDouble then Int else t
+		in
+
 		(* Raise an exception for mismatched type. *)
-		let check_assign lvaluet rvaluet err =
-			if lvaluet == rvaluet then lvaluet else raise err
+		let rec check_assign lvaluet rvaluet err =
+		(*	let rvaluet = mask_long_double rvaluet in  *)
+			if lvaluet == rvaluet then
+				lvaluet
+			else
+				let fn = function
+						LongDouble -> check_assign lvaluet Int err
+					| _ -> raise err
+				in fn (rvaluet)
 		in
 
 		(* Checking Global Variables *)
@@ -49,10 +61,13 @@ let checker (globals, functions) =
 			(StringMap.add "printi" {
 			typ = Void; fname = "printi"; formals = [(Int, "x")];
 			locals = []; body = [] }
+			(StringMap.add "clock" {
+			typ = LongDouble; fname = "clock"; formals = [];
+			locals = []; body = [] }
 			(StringMap.singleton "sleep" {
 			typ = Void; fname = "sleep"; formals = [(Int, "x")];
 			locals = []; body = []
-		}))
+		})))
 		(* Create print function for int *)
 		in
 		let function_decls =
