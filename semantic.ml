@@ -49,8 +49,8 @@ let checker (globals, functions) =
 			(StringMap.add "printi" {
 			typ = Void; fname = "printi"; formals = [(Int, "x")];
 			locals = []; body = [] }
-			(StringMap.singleton "psleep" {
-			typ = Void; fname = "psleep"; formals = [(Int, "x")];
+			(StringMap.singleton "sleep" {
+			typ = Void; fname = "sleep"; formals = [(Int, "x")];
 			locals = []; body = []
 		}))
 		(* Create print function for int *)
