@@ -8,6 +8,7 @@ open Llvm_linker
 let translate (globals, functions) =
     let context = L.global_context () in
     let the_module = L.create_module context "PhysEx"
+      and f32_t = L.float_type context
       and i64_t = L.i64_type context
       and i32_t = L.i32_type context
       and i8_t = L.i8_type context
@@ -20,9 +21,11 @@ let translate (globals, functions) =
       | A.Bool -> i1_t
       | A.Void -> void_t
       | A.Str -> str_t
+      | A.Float -> f32_t
       | A.LongDouble -> i64_t
       | A.Str_p -> L.pointer_type str_t
       | A.Int_p -> L.pointer_type i32_t
+      | A.Float_p -> L.pointer_type f32_t
     in
 (*
     let linker filename =
@@ -94,6 +97,7 @@ let translate (globals, functions) =
 
         let rec expr builder = function
             A.NumLit i -> L.const_int i32_t i
+          | A.FloatLit f -> L.const_float i32_t f
           | A.BoolLit b -> L.const_int i1_t (if b then 1 else 0)
           | A.Id s-> L.build_load (lookup s) s builder
 
