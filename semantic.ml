@@ -177,6 +177,7 @@ let checker (globals, functions) =
 			| For(e1, e2, e3, st) -> ignore (expr e1); check_bool_expr e2;
 					ignore (expr e3); stmt st
 			| While(p, s) -> check_bool_expr p; stmt s
+			| Environment (s) -> stmt s
 		in
 
 		stmt (Block func.body)
