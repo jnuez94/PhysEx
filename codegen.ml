@@ -203,6 +203,19 @@ let translate (globals, functions) =
               L.builder_at_end context merge_bb
           | A.For (e1, e2, e3, body) -> stmt builder
               (A.Block [A.Expr e1; A.While (e2, A.Block [body ; A.Expr e3])])
+
+          | Environment (it, body) ->
+            let i = (A.expr_value it) in
+            let rec rollout c i =
+              let c = c + 1 in
+                if c < i then begin
+                  List.fold_left stmt builder [body];
+                  rollout c i
+                  end
+                else
+                  List.fold_left stmt builder [body]
+
+          in rollout 0 i
         in
 
         let builder = stmt builder (A.Block fdecl.A.body) in

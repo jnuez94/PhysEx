@@ -54,7 +54,7 @@ type stmt =
 	| For of expr * expr * expr * stmt
 	| While of expr * stmt
 	| Return of expr
-	| Environment of stmt
+	| Environment of expr * stmt
 
 type func_decl = {
 	typ 				: typ;
@@ -83,6 +83,9 @@ let string_of_op = function
 let string_of_uop = function
 		Neg -> "-"
 	| Not -> "!"
+
+let rec expr_value = function
+	NumLit(l) -> l
 
 let rec string_of_expr = function
 		NumLit(l) -> string_of_int l
