@@ -12,7 +12,7 @@ int func RecTest(int i){
     return result;
 }
 
-void func main() {
+void func simulation () {
 	int i;
 	i = 11;
 	RecTest(i);

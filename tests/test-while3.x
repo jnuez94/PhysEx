@@ -13,7 +13,7 @@ void func test(){
 	}
 }
 
-void func main() {
+void func simulation() {
 	i = 3;
 	while(i > 0) {
 		test();

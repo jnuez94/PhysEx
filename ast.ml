@@ -23,6 +23,7 @@ type typ =
 	| Null (* Need to fix this later: NULL not a type i think. *)
 	| Void
 	| Float
+	| Float_p
 	| LongDouble
 	| Str
 	| Str_p
@@ -91,6 +92,7 @@ let rec string_of_expr = function
 		NumLit(l) -> string_of_int l
 	| BoolLit(true) -> "true"
 	| BoolLit(false) -> "false"
+	| FloatLit(f) -> string_of_float f
 	| StringLit(s) -> s
 	| Id(s) -> s
 	| Binop(e1, o, e2) ->
@@ -126,6 +128,7 @@ let string_of_typ = function
 	| Str -> "string"
 	| Str_p -> "string pointer"
 	| Int_p -> "int pointer"
+	| Float_p -> "float pointer"
 	| LongDouble -> "long double"
 
 let string_of_vdecl (t, id) = string_of_typ t ^ " " ^ id ^ ";\n"

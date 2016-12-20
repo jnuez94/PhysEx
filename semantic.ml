@@ -52,6 +52,9 @@ let checker (globals, functions) =
 		let built_in_decls = StringMap.add "print" {
 			typ = Void; fname = "print"; formals = [(Str, "x")];
 			locals = []; body = [] }
+			(StringMap.add "printfl" {
+			typ = Void; fname = "printfl"; formals = [(Float, "x")];
+			locals = []; body = [] }
 			(StringMap.add "printi" {
 			typ = Void; fname = "printi"; formals = [(Int, "x")];
 			locals = []; body = [] }
@@ -61,7 +64,7 @@ let checker (globals, functions) =
 			(StringMap.singleton "sleep" {
 			typ = Void; fname = "sleep"; formals = [(Int, "x")];
 			locals = []; body = []
-		})))
+		}))))
 		(* Create print function for int *)
 		in
 		let function_decls =
@@ -104,6 +107,7 @@ let checker (globals, functions) =
 				NumLit _ 	-> Int
 			| BoolLit _ -> Bool
 			| StringLit _ -> Str
+			| FloatLit _ -> Float
 			| Id s			-> type_of_identifier s
 			| Noexpr -> Void
 			| Binop(e1, op, e2) as e -> let t1 = expr e1 and t2 = expr e2 in

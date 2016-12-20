@@ -3,7 +3,7 @@ string b;
 string c;
 string d;
 
-void func main() {
+void func simulation () {
 	a = "printing a";
 	b = "printing b";
 	c = "printing c";

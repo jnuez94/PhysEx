@@ -1,7 +1,7 @@
 int i;
 int j;
 int k;
-void func main() {
+void func simulation() {
 	i = 0;
 	k = 0;
 	while(i < 3) {
