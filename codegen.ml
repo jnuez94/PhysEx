@@ -149,15 +149,18 @@ let translate (globals, functions) =
           | A.Call ("printi", [e]) ->
               L.build_call printf_func [| int_format_str; (expr builder e) |]
               "printf" builder
-
-
+          | A.Call ("printb", [e]) ->
+              L.build_call printf_func [| int_format_str; (expr builder e) |]
+              "printf" builder
           | A.Call ("sleep", [e]) ->
             L.build_call sleep_func [| (expr builder e) |]
             "sleep" builder
           | A.Call ("clock", e) ->
             L.build_call clock_func [||]
             "clock" builder
-
+          | A.Call ("printfl", [e]) ->
+              L.build_call printf_func [| int_format_str; (expr builder e) |]
+              "printf" builder
 
           | A.Call (f, act) ->
               let (fdef, fdecl) = StringMap.find f function_decls in

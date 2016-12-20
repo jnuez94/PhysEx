@@ -64,13 +64,16 @@ let checker (globals, functions) =
 			(StringMap.add "printi" {
 			typ = Void; fname = "printi"; formals = [(Int, "x")];
 			locals = []; body = [] }
+			(StringMap.add "printb" {
+			typ = Bool; fname = "printb"; formals = [(Bool, "x")];
+			locals = []; body = [] }
 			(StringMap.add "clock" {
 			typ = LongDouble; fname = "clock"; formals = [];
 			locals = []; body = [] }
 			(StringMap.singleton "sleep" {
 			typ = Void; fname = "sleep"; formals = [(Int, "x")];
 			locals = []; body = []
-		}))))
+		})))))
 		(* Create print function for int *)
 		in
 		let function_decls =

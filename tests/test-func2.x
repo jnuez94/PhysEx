@@ -1,4 +1,4 @@
-void func finishing_move(int i){
+void func finishing_move(int i, int j){
 	if(i == 0){
 		print("Kaahhh..meehhhhh...");
 		return;
@@ -13,7 +13,9 @@ void func finishing_move(int i){
 }
 void func simulation () {
 	int i;
+	int j;
+	j = 1;
 	for(i = 0; i < 3; i = i + 1){
-		finishing_move(i);
+		finishing_move(i, j);
 	}
 }
