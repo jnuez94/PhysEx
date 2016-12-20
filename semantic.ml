@@ -26,14 +26,8 @@ let checker (globals, functions) =
 			| _ -> ()
 		in
 
-		(* Mask long double as int *)
-		let mask_long_double t =
-			if t == LongDouble then Int else t
-		in
-
 		(* Raise an exception for mismatched type. *)
 		let rec check_assign lvaluet rvaluet err =
-		(*	let rvaluet = mask_long_double rvaluet in  *)
 			if lvaluet == rvaluet then
 				lvaluet
 			else
@@ -168,6 +162,10 @@ let checker (globals, functions) =
 			then raise (Failure ("expected Boolean expression"))
 		else () in
 
+		let check_int_expr e = if expr e != Int
+			then raise (Failure ("expected Integer expression"))
+		in
+
 		let rec stmt = function
 				Expr e -> ignore (expr e)
 			| Block sl -> let rec check_block = function
@@ -184,7 +182,7 @@ let checker (globals, functions) =
 			| For(e1, e2, e3, st) -> ignore (expr e1); check_bool_expr e2;
 					ignore (expr e3); stmt st
 			| While(p, s) -> check_bool_expr p; stmt s
-			| Environment (s) -> stmt s
+			| Environment (i, s) -> check_int_expr i; stmt s
 		in
 
 		stmt (Block func.body)

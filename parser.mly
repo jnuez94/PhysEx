@@ -84,7 +84,7 @@ stmt:
   | FOR L_PAREN expr SEMICOLON expr SEMICOLON expr R_PAREN stmt
      { For($3, $5, $7, $9) }
   | WHILE L_PAREN expr R_PAREN stmt { While($3, $5) }
-	| ST_ENV stmt 				{ Environment($2) }
+	| ST_ENV L_PAREN expr R_PAREN stmt 				{ Environment($3, $5) }
 
 kv_pairs:
 	| kv_pair COMMA kv_pairs {$1 :: $3}
