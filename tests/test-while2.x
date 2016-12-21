@@ -7,13 +7,13 @@ void func simulation() {
 	while(i < 3) {
 		for (j = 0; j < 3; j = j + 1) {
 			while (k < 3){
-				print("slam");
+				print("slam\n");
 				k = k + 1;
 			}
-			print("dank");
+			print("dank\n");
 			k = 0;
 		}
-		print ("memes");
+		print ("memes\n");
 		i=i+1;
 	}
 }

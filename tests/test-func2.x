@@ -1,13 +1,13 @@
 void func finishing_move(int i, int j){
 	if(i == 0){
-		print("Kaahhh..meehhhhh...");
+		print("Kaahhh..meehhhhh...\n");
 		return;
 	}
 	if(i == 1){
-		print("haa..meehhhhh...");
+		print("haa..meehhhhh...\n");
 	}
 	else{
-		print("HAAAAAAAAAAAAA!");
+		print("HAAAAAAAAAAAAA!\n");
 	}
 
 }

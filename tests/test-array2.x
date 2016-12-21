@@ -6,8 +6,8 @@ void func simulation () {
   arr[2] = 42;
 
 	printi(arr[0]);
-  print(" ");
+  print("\n");
   printi(arr[1]);
-  print(" ");
+  print("\n");
   printi(arr[2]);
 }
